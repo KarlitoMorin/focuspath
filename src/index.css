@@ -1,0 +1,87 @@
+:root {
+  --bg: #f7f8fa;
+  --surface: #ffffff;
+  --subtle: #f2f4f7;
+  --line: #e7e9ee;
+  --text: #111827;
+  --muted: #6b7280;
+  --accent: #3b5bdb;
+  --accent-ink: #ffffff;
+  --accent-soft: #eef2ff;
+  --good: #16a34a;
+  --reward: #b7791f;
+  --reward-soft: #fdf6e7;
+  --danger: #c0362c;
+  --radius: 16px;
+
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, Roboto, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1115;
+    --surface: #171a21;
+    --subtle: #1f232c;
+    --line: #2a2f3a;
+    --text: #eceef3;
+    --muted: #9ca3af;
+    --accent: #8ea2ff;
+    --accent-ink: #0b0e1a;
+    --accent-soft: #1f2540;
+    --good: #4ade80;
+    --reward: #f2c14e;
+    --reward-soft: #2d2616;
+    --danger: #ff8a80;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Animations OFF (Focus settings): no motion anywhere. */
+.motion-off *,
+.motion-off *::before,
+.motion-off *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  min-width: 320px;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
