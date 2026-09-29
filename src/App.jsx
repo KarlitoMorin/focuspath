@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { BADGES, CLASS_UPDATES, SAMPLE_AD, SIZES, dueLabel, STEP_XP, TASKS, THEMES, XP_PER_LEVEL, isUnlocked, labels, levelInfo, themesUnlockedBetween } from './data.js'
+import { BADGES, CLASS_UPDATES, SIZES, dueLabel, STEP_XP, TASKS, THEMES, XP_PER_LEVEL, isUnlocked, labels, levelInfo, themesUnlockedBetween } from './data.js'
 import './App.css'
 
 const STORAGE_KEY = 'focuspath-prototype-v1'
@@ -298,7 +298,7 @@ export default function App() {
       return s
     })
 
-  // Focus Mode on = ads blocked, notifications held, menus hidden, motion off. One tap, no settings.
+  // Focus Mode on = autoplay blocked, notifications held, menus hidden, motion off. One tap, no settings.
   const setFocus = (on) => {
     setSetting('focusMode', on)
     setBellOpen(false)
@@ -1022,7 +1022,7 @@ export default function App() {
 
   function FocusCard() {
     const on = settings.focusMode
-    const items = ['Ads and autoplay blocked', 'Notifications held', 'Menus hidden', 'Motion off']
+    const items = ['Autoplay blocked', 'Notifications held', 'Menus hidden', 'Motion off']
     return (
       <div id="focus-card" className="focus-card" role="status">
         <strong className="focus-card-title">Focus Mode {on ? 'on' : 'off'}</strong>
@@ -1035,18 +1035,6 @@ export default function App() {
           ))}
         </ul>
         {!on && <small>{CLASS_UPDATES.length} class updates were held while you focused.</small>}
-      </div>
-    )
-  }
-
-  function AdBanner() {
-    return (
-      <div className="ad" aria-label="Advertisement">
-        <span className="ad-tag">Ad</span>
-        <div>
-          <strong>{SAMPLE_AD.title}</strong>
-          <p>{SAMPLE_AD.text}</p>
-        </div>
       </div>
     )
   }
@@ -1165,7 +1153,6 @@ export default function App() {
             ))}
           </span>
         </nav>
-        {!settings.focusMode && AdBanner()}
         <div key={`${screen}-${prog.step}`} className="screen">
           {screens[screen]()}
         </div>
