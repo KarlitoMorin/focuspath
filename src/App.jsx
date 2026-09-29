@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { BADGES, SIZES, STEP_XP, TASKS, THEMES, XP_PER_LEVEL, isUnlocked, labels, levelInfo, themesUnlockedBetween } from './data.js'
+import { BADGES, PORTAL, SIZES, STEP_XP, TASKS, THEMES, XP_PER_LEVEL, isUnlocked, labels, levelInfo, themesUnlockedBetween } from './data.js'
 import './App.css'
 
 const STORAGE_KEY = 'focuspath-prototype-v1'
@@ -243,6 +243,11 @@ export default function App() {
       s.settings[key] = value
       return s
     })
+
+  const setFocus = (on) => {
+    setSetting('focusMode', on)
+    setToast(on ? 'Focus Mode on: menus, feed and sidebar hidden.' : 'Focus Mode off: full portal view.')
+  }
 
   const resetSprint = (min = settings.sprintMin, running = true) =>
     setSprint({ remaining: min * 60, running, over: false })
@@ -877,7 +882,7 @@ export default function App() {
             <span>
               <strong>Focus Mode</strong>
             </span>
-            <input type="checkbox" className="switch" checked={settings.focusMode} onChange={(e) => setSetting('focusMode', e.target.checked)} />
+            <input type="checkbox" className="switch" checked={settings.focusMode} onChange={(e) => setFocus(e.target.checked)} />
           </label>
 
           <label className="setting">
@@ -954,6 +959,55 @@ export default function App() {
     )
   }
 
+  const openMenu = (item) => {
+    if (item === 'Home' || item === 'Tasks') go('tasks')
+    else if (item === 'Achievements') go('achievements')
+    else setToast(`${item} is part of the full learning platform.`)
+  }
+
+  function Sidebar() {
+    const current = screen === 'achievements' ? 'Achievements' : 'Tasks'
+    return (
+      <aside className="side" aria-label="Portal menu">
+        {PORTAL.menu.map((item) => (
+          <button key={item} className={item === current ? 'on' : ''} onClick={() => openMenu(item)}>
+            {item}
+          </button>
+        ))}
+      </aside>
+    )
+  }
+
+  function Feed() {
+    return (
+      <aside className="feed" aria-label="Class feed">
+        <div className="card feed-card">
+          <h2>Class stream</h2>
+          <ul>
+            {PORTAL.feed.map((post, i) => (
+              <li key={i}>
+                <span className="feed-from">{post.from}</span>
+                <p>{post.text}</p>
+                <small>{post.when} ago</small>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="card feed-card">
+          <h2>Upcoming</h2>
+          <ul>
+            {PORTAL.upcoming.map((u) => (
+              <li key={u.title} className="due">
+                <p>{u.title}</p>
+                <small>Due {u.due}</small>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </aside>
+    )
+  }
+
   const screens = {
     tasks: TaskList,
     step: StepScreen,
@@ -979,12 +1033,17 @@ export default function App() {
             <button className={screen === 'achievements' ? 'on' : ''} onClick={() => go('achievements')}>
               Achievements
             </button>
+            {['Classes', 'Calendar', 'Grades'].map((item) => (
+              <button key={item} onClick={() => openMenu(item)}>
+                {item}
+              </button>
+            ))}
           </nav>
         )}
         <div className="topbar-right">
           <button
             className={settings.focusMode ? 'focus-pill on' : 'focus-pill'}
-            onClick={() => setSetting('focusMode', !settings.focusMode)}
+            onClick={() => setFocus(!settings.focusMode)}
             aria-pressed={settings.focusMode}
           >
             <span className="pill-dot" /> Focus Mode: {settings.focusMode ? 'ON' : 'OFF'}
@@ -1012,7 +1071,7 @@ export default function App() {
                   onClick={() => {
                     setMenuOpen(false)
                     if (inTask) pauseAndSave()
-                    setSetting('focusMode', false)
+                    setFocus(false)
                   }}
                 >
                   Exit focus
@@ -1023,7 +1082,9 @@ export default function App() {
         </div>
       </header>
 
-      <main className="main">
+      <main className={settings.focusMode ? 'main' : 'main portal'}>
+        {!settings.focusMode && Sidebar()}
+        <div className="center">
         {inTask && GoalAnchor()}
         <nav className="here" aria-label="You are here">
           <span className="here-icon">{Icon.pin}</span>
@@ -1039,6 +1100,8 @@ export default function App() {
         <div key={`${screen}-${prog.step}`} className="screen">
           {screens[screen]()}
         </div>
+        </div>
+        {!settings.focusMode && Feed()}
       </main>
 
       {toast && (

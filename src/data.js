@@ -114,3 +114,20 @@ export function labels(theme) {
     trophy: guitar ? '🎸' : '🏆',
   }
 }
+
+// The regular learning-portal clutter that Focus Mode hides (menus, feed, sidebar).
+export const PORTAL = {
+  menu: ['Home', 'Tasks', 'Achievements', 'Classes', 'Calendar', 'Grades', 'Messages', 'Files'],
+  feed: [
+    { from: 'English', text: 'Essay rubric uploaded. Check it before you start.', when: '2h' },
+    { from: 'Math', text: 'Practice set answers will be posted on Friday.', when: '5h' },
+    { from: 'School', text: 'Club sign-ups are open this week.', when: '1d' },
+    { from: 'Science', text: 'New reading added to Chapter 4.', when: '1d' },
+    { from: 'School', text: 'Photo day is next Tuesday.', when: '2d' },
+  ],
+  upcoming: [
+    { title: 'Math practice set', due: 'Thu' },
+    { title: 'English essay', due: 'Fri' },
+    { title: 'Science reading questions', due: 'Mon' },
+  ],
+}

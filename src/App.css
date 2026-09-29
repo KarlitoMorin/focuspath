@@ -196,6 +196,102 @@ small {
   color: var(--accent);
 }
 
+/* ---------- Focus Mode OFF: regular portal (menus, feed, sidebar) ---------- */
+
+.main.portal {
+  max-width: 1240px;
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr) 280px;
+  gap: 24px;
+  align-items: start;
+}
+.center {
+  min-width: 0;
+}
+.side {
+  position: sticky;
+  top: 88px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.side button {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  text-align: left;
+  font-weight: 500;
+  color: var(--muted);
+}
+.side button:hover {
+  background: var(--subtle);
+  color: var(--text);
+}
+.side button.on {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.feed {
+  position: sticky;
+  top: 88px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.feed-card {
+  padding: 18px;
+}
+.feed-card h2 {
+  margin-bottom: 8px;
+  font-size: 1rem;
+}
+.feed-card ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.feed-card li {
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+  font-size: 0.88rem;
+}
+.feed-card li:first-child {
+  border-top: 0;
+}
+.feed-from {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+.feed-card li.due {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+@media (max-width: 1000px) {
+  .main.portal {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  .side {
+    position: static;
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .side button {
+    flex-shrink: 0;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+  }
+  .feed {
+    position: static;
+  }
+}
+
 /* ---------- Goal Anchor ---------- */
 
 .goal-anchor {
