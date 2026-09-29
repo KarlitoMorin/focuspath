@@ -218,6 +218,17 @@ export default function App() {
   }, [sprint.running])
 
   useEffect(() => {
+    if (!settingsOpen) return
+    const onKey = (e) => e.key === 'Escape' && setSettingsOpen(false)
+    document.body.style.overflow = 'hidden'
+    window.addEventListener('keydown', onKey)
+    return () => {
+      document.body.style.overflow = ''
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [settingsOpen])
+
+  useEffect(() => {
     if (!toast) return
     const id = setTimeout(() => setToast(null), 3500)
     return () => clearTimeout(id)
@@ -430,10 +441,6 @@ export default function App() {
       <section className="page">
         <div className="list-head">
           <h1>Your tasks</h1>
-          <button className="icon-btn trophy" onClick={() => go('achievements')} aria-label={`Achievements (${doneTasks.length} finished)`}>
-            <span aria-hidden="true">{L.trophy}</span>
-            {doneTasks.length > 0 && <span className="count">{doneTasks.length}</span>}
-          </button>
         </div>
         {settings.rewards && (
           <span className="chip">
@@ -856,14 +863,15 @@ export default function App() {
 
   function SettingsPanel() {
     return (
-      <div className="overlay" role="dialog" aria-modal="true" aria-labelledby="settings-title">
-        <div className="card sheet">
-          <div className="list-head">
+      <div className="overlay" onClick={(e) => e.target === e.currentTarget && setSettingsOpen(false)}>
+        <div className="card sheet" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+          <div className="sheet-head">
             <h2 id="settings-title">Focus settings</h2>
             <button className="btn" onClick={() => setSettingsOpen(false)}>
               Done
             </button>
           </div>
+          <div className="sheet-body">
 
           <label className="setting">
             <span>
@@ -940,6 +948,7 @@ export default function App() {
           <button className="btn danger" onClick={resetAll}>
             Reset prototype
           </button>
+          </div>
         </div>
       </div>
     )
