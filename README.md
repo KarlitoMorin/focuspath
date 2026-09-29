@@ -1,16 +1,38 @@
-# React + Vite
+# FocusPath
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A distraction-free, goal-anchored learning interface for students with ADHD.
 
-Currently, two official plugins are available:
+Group 3 · BSCS3A · Human-Computer Interaction · Activity 2 / Midterm Project: Inclusive Interfaces
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+This is a clickable prototype designed for our persona, Lucas: a 15-year-old high school student with ADHD. He loses focus on cluttered interfaces and forgets what he set out to do.
 
-## React Compiler
+## Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| Feature | What it does | Need addressed |
+|---|---|---|
+| Focus Mode | One task per screen; menus and extra links stay hidden | Visual overload |
+| Distraction Shield | No ads or autoplay; an Animations switch turns all motion off | Ads and motion |
+| Simple Nav + "You are here" | Same header on every screen, with a location line under it | Getting lost |
+| Goal Anchor | Pinned card: "You're working on: Submit English essay · Step 2 of 4" | Forgetting his goal |
+| Step Chunking + Progress | Short checklist per step; Next unlocks when it's done | Sustaining focus |
+| Focus Sprints | 10 / 15 / 25 min timer that suggests breaks | Sustaining focus |
+| "Where was I?" Resume | Auto-save, then a Welcome back screen marking each step Done, Current, or Locked | Recovering his goal |
+| Game-Style Rewards | +20 XP per step, size bonus, focus levels, badges | Sustaining focus |
+| Task Size Tags | Quick / Medium / Big, with bonuses of +30 / +50 / +80 XP | Easier to start |
+| Achievements | Finished tasks, XP, and a badge shelf | Motivation |
+| Guitar themes | Acoustic (100 XP), Electric (200 XP), Headliner (300 XP) | Sustaining focus |
 
-## Expanding the ESLint configuration
+## Demo tips
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+In Focus settings (gear icon), the **Demo** buttons jump straight to a screen: Essay Step 2, Welcome back, Ready to submit, or +100 XP. **Reset prototype** starts over.
+
+Progress is saved in your own browser, so each person who opens the link starts fresh.
+
+## Run locally
+
+```bash
+npm install
+npm run dev
+```
+
+Built with React and Vite. Task data is sample content; the learning-platform connection is simulated.

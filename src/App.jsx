@@ -59,6 +59,9 @@ const Icon = {
   star: (
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.8 6.4.9-4.6 4.5 1.1 6.3L12 17.3l-5.7 3 1.1-6.3-4.6-4.5 6.4-.9z" fill="currentColor" stroke="none" /></svg>
   ),
+  pin: (
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z" /><circle cx="12" cy="9.5" r="2.5" /></svg>
+  ),
   save: (
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
   ),
@@ -291,10 +294,6 @@ export default function App() {
 
   const prevStep = () => {
     setCleared(null)
-    if (prog.step === 0) {
-      pauseAndSave()
-      return
-    }
     update((s) => {
       const p = s.progress[task.id]
       p.step -= 1
@@ -375,11 +374,56 @@ export default function App() {
     go('tasks')
   }
 
+  // Demo shortcuts (Focus settings): jump straight to a state for the presentation.
+  const loadDemo = (kind) => {
+    const essay = TASKS[0]
+    const done = (i) => essay.steps[i].items.map(() => true)
+    const next = structuredClone(kind === 'xp' ? state : DEFAULT_STATE)
+    next.settings = { ...state.settings }
+    let target = 'step'
+    if (kind === 'xp') {
+      const unlocked = themesUnlockedBetween(state.xp, state.xp + 100)
+      next.xp += 100
+      setState(next)
+      setSettingsOpen(false)
+      setToast(unlocked.length ? `+100 XP. 🎸 ${unlocked[0].name} theme unlocked!` : '+100 XP added.')
+      return
+    }
+    if (kind === 'step2' || kind === 'resume') {
+      next.progress.essay = { ...blankProgress(), started: true, step: 1, best: 1, paused: kind === 'resume', checks: { 0: done(0), 1: [true, false, false] } }
+      next.xp = STEP_XP
+      if (kind === 'resume') target = 'resume'
+    }
+    if (kind === 'submit') {
+      next.progress.essay = { ...blankProgress(), started: true, step: 3, best: 4, reviewing: true, checks: Object.fromEntries(essay.steps.map((_, i) => [i, done(i)])) }
+      next.xp = STEP_XP * 4
+      target = 'review'
+    }
+    next.lastTaskId = essay.id
+    setState(next)
+    setSavedAt(true)
+    setTaskId(essay.id)
+    setCleared(null)
+    setSettingsOpen(false)
+    resetSprint(settings.sprintMin, target === 'step')
+    go(target)
+  }
+
   /* ----- Screens ----- */
 
   const doneTasks = TASKS.filter((t) => state.progress[t.id]?.done)
   const openTasks = TASKS.filter((t) => !state.progress[t.id]?.done)
   const inTask = task && ['step', 'resume', 'review', 'sprint'].includes(screen)
+
+  const here = {
+    tasks: ['Tasks'],
+    achievements: ['Tasks', 'Achievements'],
+    step: ['Tasks', task?.title, `${L.step} ${prog.step + 1}`],
+    sprint: ['Tasks', task?.title, 'Focus Sprint'],
+    resume: ['Tasks', task?.title, 'Welcome back'],
+    review: ['Tasks', task?.title, 'Final check'],
+    complete: ['Tasks', task?.title, 'Done'],
+  }[screen]
 
   function TaskList() {
     return (
@@ -461,6 +505,7 @@ export default function App() {
     const checks = prog.checks[prog.step] || step.items.map(() => false)
     const firstOpen = checks.findIndex((c) => !c)
     const allDone = firstOpen === -1
+    const left = checks.filter((c) => !c).length
     const isLast = prog.step === task.steps.length - 1
     return (
       <section className="page step-page">
@@ -512,15 +557,21 @@ export default function App() {
 
           <div className="actions">
             <button className="btn primary big" onClick={nextStep} disabled={!allDone}>
-              {isLast ? 'Check & submit →' : `Next ${L.step.toLowerCase()} →`}
+              {allDone
+                ? isLast
+                  ? 'Check & submit →'
+                  : `Next ${L.step.toLowerCase()} →`
+                : `${isLast ? 'Check & submit' : `Next ${L.step.toLowerCase()}`} · ${left} left`}
             </button>
-            <div className="secondary">
+            <div className={prog.step === 0 ? 'secondary single' : 'secondary'}>
               <button className="btn" onClick={pauseAndSave}>
                 Pause &amp; Save
               </button>
-              <button className="btn" onClick={prevStep}>
-                ← Back
-              </button>
+              {prog.step > 0 && (
+                <button className="btn" onClick={prevStep}>
+                  ← Back
+                </button>
+              )}
             </div>
           </div>
         </article>
@@ -865,6 +916,27 @@ export default function App() {
             </div>
           </div>
 
+          <div className="setting col">
+            <span>
+              <strong>Demo</strong>
+              <small>Jump to a screen for the presentation.</small>
+            </span>
+            <div className="demo-grid">
+              <button className="btn" onClick={() => loadDemo('step2')}>
+                Essay, Step 2
+              </button>
+              <button className="btn" onClick={() => loadDemo('resume')}>
+                Welcome back
+              </button>
+              <button className="btn" onClick={() => loadDemo('submit')}>
+                Ready to submit
+              </button>
+              <button className="btn" onClick={() => loadDemo('xp')}>
+                +100 XP
+              </button>
+            </div>
+          </div>
+
           <button className="btn danger" onClick={resetAll}>
             Reset prototype
           </button>
@@ -944,6 +1016,17 @@ export default function App() {
 
       <main className="main">
         {inTask && GoalAnchor()}
+        <nav className="here" aria-label="You are here">
+          <span className="here-icon">{Icon.pin}</span>
+          <span className="here-label">You are here:</span>
+          <span className="crumbs">
+            {here.map((c, i) => (
+              <span key={i} className={i === here.length - 1 ? 'crumb last' : 'crumb'} aria-current={i === here.length - 1 ? 'page' : undefined}>
+                {c}
+              </span>
+            ))}
+          </span>
+        </nav>
         <div key={`${screen}-${prog.step}`} className="screen">
           {screens[screen]()}
         </div>

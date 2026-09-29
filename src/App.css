@@ -229,7 +229,7 @@ small {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   box-shadow: 0 4px 16px rgba(17, 24, 39, 0.05);
-  margin-bottom: 16px;
+  margin-bottom: 10px;
 }
 .goal-icon {
   display: grid;
@@ -278,6 +278,39 @@ small {
   width: 14px;
   height: 14px;
   stroke-width: 3;
+}
+
+/* ---------- You are here (WCAG 2.4.8) ---------- */
+
+.here {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 4px 16px;
+  font-size: 0.82rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.here-icon {
+  display: inline-flex;
+  color: var(--accent);
+}
+.here-icon svg {
+  width: 15px;
+  height: 15px;
+}
+.crumbs {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.crumb + .crumb::before {
+  content: '›';
+  margin: 0 6px;
+}
+.crumb.last {
+  color: var(--text);
+  font-weight: 600;
 }
 
 /* ---------- Task list ---------- */
@@ -455,6 +488,14 @@ small {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
+}
+.secondary.single {
+  grid-template-columns: 1fr;
+}
+.demo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
 }
 .stack {
   display: flex;
@@ -1308,6 +1349,9 @@ small {
   }
   .themes {
     grid-template-columns: repeat(2, 1fr);
+  }
+  .here {
+    margin-bottom: 12px;
   }
 }
 
