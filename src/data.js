@@ -22,6 +22,12 @@ export const TASKS = [
     steps: [
       {
         title: 'Read the essay prompt',
+        article: {
+          source: 'Linked from your class page',
+          title: 'Essay prompt: A place that matters to you',
+          before: 'Think of a place that matters to you. It can be big or small, near or far.',
+          after: 'In 4 paragraphs, describe the place and explain why it matters. Use details that help the reader see it.',
+        },
         items: ['Read the prompt once, start to finish', 'Highlight the main question', 'Write the question in your own words'],
       },
       {
@@ -70,6 +76,7 @@ export const TASKS = [
     steps: [
       {
         title: 'Read the chapter section',
+        video: { title: 'Chapter 4 intro', length: '2:10' },
         items: ['Read the section headings first', 'Read the section', 'Note 3 key terms'],
       },
       {
@@ -93,7 +100,7 @@ TASKS.push(
     size: 'medium',
     time: 'About 35 min',
     color: 'purple',
-    dueIn: 4,
+    dueIn: -1,
     steps: [
       { title: 'Research your topic', items: ['Pick 2 sources', 'Note 3 key facts'] },
       { title: 'Write the summary', items: ['Write the opening sentence', 'Explain the key facts', 'Check your spelling'] },
@@ -124,7 +131,13 @@ export const BADGES = [
 
 // Due-Date Guidance: calm labels, relative to today ("Due today", "Due tomorrow", or the weekday).
 export function dueLabel(dueIn) {
-  if (dueIn <= 0) return 'Due today'
+  if (dueIn === -1) return 'Was due yesterday'
+  if (dueIn < -1) {
+    const day = new Date()
+    day.setDate(day.getDate() + dueIn)
+    return `Was due ${day.toLocaleDateString('en-US', { weekday: 'long' })}`
+  }
+  if (dueIn === 0) return 'Due today'
   if (dueIn === 1) return 'Due tomorrow'
   const day = new Date()
   day.setDate(day.getDate() + dueIn)

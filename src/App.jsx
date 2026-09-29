@@ -59,6 +59,9 @@ const Icon = {
   logout: (
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4" /><path d="M10 16l-4-4 4-4M6 12h10" /></svg>
   ),
+  play: (
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor" /></svg>
+  ),
   back: (
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
   ),
@@ -206,8 +209,10 @@ export default function App() {
   const [screen, setScreen] = useState(initialResume ? 'resume' : 'tasks')
   const [taskId, setTaskId] = useState(initialResume ? state.lastTaskId : null)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [videoChoice, setVideoChoice] = useState({})
   const [filter, setFilter] = useState('todo')
-  const [focusCardOpen, setFocusCardOpen] = useState(false)
+  const [focusIntroOpen, setFocusIntroOpen] = useState(false)
+  const [dontShowAgain, setDontShowAgain] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [themeOpen, setThemeOpen] = useState(false)
   const [draft, setDraft] = useState(null)
@@ -246,11 +251,10 @@ export default function App() {
   }, [sprint.running])
 
   useEffect(() => {
-    if (!menuOpen && !focusCardOpen) return
+    if (!menuOpen) return
     const close = (e) => {
-      if (e.type === 'keydown' ? e.key !== 'Escape' : e.target.closest('.menu-wrap, .focus-wrap')) return
+      if (e.type === 'keydown' ? e.key !== 'Escape' : e.target.closest('.menu-wrap')) return
       setMenuOpen(false)
-      setFocusCardOpen(false)
     }
     document.addEventListener('pointerdown', close)
     document.addEventListener('keydown', close)
@@ -258,21 +262,15 @@ export default function App() {
       document.removeEventListener('pointerdown', close)
       document.removeEventListener('keydown', close)
     }
-  }, [menuOpen, focusCardOpen])
-
-  // The Focus Mode status card hides itself after a few seconds.
-  useEffect(() => {
-    if (!focusCardOpen) return
-    const id = setTimeout(() => setFocusCardOpen(false), 4000)
-    return () => clearTimeout(id)
-  }, [focusCardOpen, state.settings.focusMode])
+  }, [menuOpen])
 
   useEffect(() => {
-    if (!settingsOpen && !themeOpen) return
+    if (!settingsOpen && !themeOpen && !focusIntroOpen) return
     const onKey = (e) => {
       if (e.key !== 'Escape') return
       setSettingsOpen(false)
       setThemeOpen(false)
+      setFocusIntroOpen(false)
     }
     document.body.style.overflow = 'hidden'
     window.addEventListener('keydown', onKey)
@@ -280,7 +278,7 @@ export default function App() {
       document.body.style.overflow = ''
       window.removeEventListener('keydown', onKey)
     }
-  }, [settingsOpen, themeOpen])
+  }, [settingsOpen, themeOpen, focusIntroOpen])
 
   useEffect(() => {
     if (!toast) return
@@ -299,9 +297,19 @@ export default function App() {
     })
 
   // Focus Mode on = one task at a time, autoplay blocked, motion off. One tap, no settings.
+  // Turning it on explains what it does, until he ticks "Don't show this again".
   const setFocus = (on) => {
     setSetting('focusMode', on)
-    setFocusCardOpen(true)
+    if (on && !settings.hideFocusIntro) {
+      setDontShowAgain(false)
+      setFocusIntroOpen(true)
+    } else {
+      setToast(on ? 'Focus Mode on.' : 'Focus Mode off.')
+    }
+  }
+  const closeFocusIntro = () => {
+    if (dontShowAgain) setSetting('hideFocusIntro', true)
+    setFocusIntroOpen(false)
   }
 
   const resetSprint = (min = settings.sprintMin, running = true) =>
@@ -442,13 +450,6 @@ export default function App() {
   const openTasks = TASKS.filter((t) => !state.progress[t.id]?.done).sort((a, b) => a.dueIn - b.dueIn)
   const inTask = task && ['step', 'resume', 'review', 'sprint'].includes(screen)
 
-  const xpChip = () =>
-    settings.rewards && (
-      <span className="chip">
-        <span className="chip-star">{Icon.star}</span> {state.xp} XP
-      </span>
-    )
-
   function TaskCard(t, i) {
     const p = state.progress[t.id]
     const going = isInProgress(p)
@@ -483,7 +484,6 @@ export default function App() {
 
   function WorkSummary(t) {
     const p = state.progress[t.id] || {}
-    const stepsDone = p.done ? t.steps.length : p.step || 0
     return (
       <li key={t.id} className={`tcard summary c-${t.color}`}>
         <span className="tcard-body">
@@ -492,16 +492,10 @@ export default function App() {
             {t.title}
           </span>
           <span className="summary-line">
-            {p.done ? (
-              <>
-                Finished {shortDate(p.doneAt)} · {t.steps.length} {L.step.toLowerCase()}s
-                {settings.rewards && <> · +{p.xpEarned} XP</>}
-              </>
-            ) : (
-              <>
-                Was {dueLabel(t.dueIn).toLowerCase()} · {stepsDone} of {t.steps.length} {L.step.toLowerCase()}s done
-              </>
-            )}
+            <>
+              Finished {shortDate(p.doneAt)} · {t.steps.length} {L.step.toLowerCase()}s
+              {settings.rewards && <> · +{p.xpEarned} XP</>}
+            </>
           </span>
         </span>
       </li>
@@ -519,12 +513,11 @@ export default function App() {
 
     if (settings.focusMode) {
       const inProgress = openTasks.filter((t) => isInProgress(state.progress[t.id]))
-      const next = inProgress.find((t) => t.id === state.lastTaskId) || inProgress[0] || openTasks[0]
+      const next = inProgress.find((t) => t.id === state.lastTaskId) || inProgress[0] || todo[0] || missed[0]
       return (
         <section className="page">
           <div className="list-head">
             <h1 className="list-title">{next && isInProgress(state.progress[next.id]) ? 'Continue your task' : 'Up next'}</h1>
-            {xpChip()}
           </div>
           {next ? (
             <ul className="tasks">{TaskCard(next, isInProgress(state.progress[next.id]) ? -1 : 0)}</ul>
@@ -543,7 +536,6 @@ export default function App() {
       <section className="page">
         <div className="list-head">
           <h1 className="list-title">Your Tasks</h1>
-          {xpChip()}
         </div>
         <div className="status-tabs" role="tablist" aria-label="Task status">
           {tabs.map((tab) => (
@@ -580,7 +572,7 @@ export default function App() {
           (missed.length === 0 ? (
             <p className="muted">No missed tasks.</p>
           ) : (
-            <ul className="tasks">{missed.map((t) => WorkSummary(t))}</ul>
+            <ul className="tasks">{missed.map((t) => TaskCard(t, -1))}</ul>
           ))}
 
         {filter === 'done' &&
@@ -625,6 +617,67 @@ export default function App() {
     )
   }
 
+  function VideoTile(video) {
+    const key = `${task.id}-${prog.step}`
+    // Autoplays like a normal platform when Focus Mode is off; Focus Mode blocks autoplay.
+    const playing = videoChoice[key] ?? !settings.focusMode
+    const setPlaying = (on) => setVideoChoice((c) => ({ ...c, [key]: on }))
+    return (
+      <div className={playing ? 'video playing' : 'video'}>
+        <div className="video-screen">
+          {playing ? (
+            <>
+              <span className="video-live">{Icon.play} Playing</span>
+              <span className="video-bar">
+                <span />
+              </span>
+            </>
+          ) : (
+            <button className="video-play" onClick={() => setPlaying(true)} aria-label={`Play ${video.title}`}>
+              {Icon.play}
+            </button>
+          )}
+        </div>
+        <div className="video-info">
+          <span>
+            <strong>{video.title}</strong>
+            <small>Teacher video · {video.length}</small>
+          </span>
+          {playing ? (
+            <button className="btn" onClick={() => setPlaying(false)}>
+              Pause
+            </button>
+          ) : (
+            settings.focusMode && <small className="video-note">Autoplay blocked</small>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  // A linked web page with an ad in it; Focus Mode hides the ad.
+  function ArticleTile(article) {
+    return (
+      <div className="article">
+        <small>{article.source}</small>
+        <strong className="article-title">{article.title}</strong>
+        <p>{article.before}</p>
+        {settings.focusMode ? (
+          <p className="ad-hidden">{Icon.check} Ad hidden</p>
+        ) : (
+          <div className="article-ad" aria-label="Advertisement">
+            <span className="ad-tag">Ad</span>
+            <span>
+              <strong>SnapQuiz Pro</strong>
+              <small>Finish homework 2x faster! Tap to learn more.</small>
+            </span>
+          </div>
+        )}
+        <p>{article.after}</p>
+      </div>
+    )
+  }
+
   function StepScreen() {
     const step = task.steps[prog.step]
     const checks = prog.checks[prog.step] || step.items.map(() => false)
@@ -654,6 +707,9 @@ export default function App() {
             </div>
           )}
           <h1 className="step-title">{step.title}</h1>
+
+          {step.video && VideoTile(step.video)}
+          {step.article && ArticleTile(step.article)}
 
           <ul className="checklist">
             {step.items.map((item, i) => (
@@ -1063,20 +1119,36 @@ export default function App() {
     setToast(`${item} is part of the full learning platform.`)
   }
 
-  function FocusCard() {
-    const on = settings.focusMode
-    const items = ['One task at a time', 'Autoplay blocked', 'Motion off']
+  function FocusIntro() {
+    const items = [
+      ['One task at a time', 'Other tasks and menus stay hidden.'],
+      ['Ads and autoplay blocked', 'Ads are hidden and videos wait until you press play.'],
+      ['Motion off', 'Nothing on screen moves or flashes.'],
+    ]
     return (
-      <div id="focus-card" className="focus-card" role="status">
-        <strong className="focus-card-title">Focus Mode {on ? 'on' : 'off'}</strong>
-        <ul>
-          {items.map((label) => (
-            <li key={label} className={on ? 'is-on' : 'is-off'}>
-              <span className="focus-mark">{on ? Icon.check : Icon.x}</span>
-              {label}
-            </li>
-          ))}
-        </ul>
+      <div className="overlay centered" onClick={(e) => e.target === e.currentTarget && closeFocusIntro()}>
+        <div className="card focus-intro" role="dialog" aria-modal="true" aria-labelledby="focus-intro-title">
+          <span className="focus-intro-icon">{Icon.target}</span>
+          <h2 id="focus-intro-title">Focus Mode is on</h2>
+          <ul>
+            {items.map(([label, detail]) => (
+              <li key={label}>
+                <span className="focus-mark">{Icon.check}</span>
+                <span>
+                  <strong>{label}</strong>
+                  <small>{detail}</small>
+                </span>
+              </li>
+            ))}
+          </ul>
+          <label className="dont-show">
+            <input type="checkbox" checked={dontShowAgain} onChange={(e) => setDontShowAgain(e.target.checked)} />
+            Don't show this again
+          </label>
+          <button className="btn primary big" onClick={closeFocusIntro}>
+            Got it
+          </button>
+        </div>
       </div>
     )
   }
@@ -1112,19 +1184,24 @@ export default function App() {
               </span>
               <span className="fs-state">{settings.focusMode ? 'ON' : 'OFF'}</span>
             </button>
-            {focusCardOpen && FocusCard()}
           </div>
-          {!settings.focusMode && (
           <div className="menu-wrap">
-            <button className="avatar" onClick={() => setMenuOpen((o) => !o)} aria-label="Profile menu" aria-expanded={menuOpen}>
-              {Icon.user}
+            <button
+              className={settings.focusMode ? 'avatar gear' : 'avatar'}
+              onClick={() => setMenuOpen((o) => !o)}
+              aria-label={settings.focusMode ? 'Menu' : 'Profile menu'}
+              aria-expanded={menuOpen}
+            >
+              {settings.focusMode ? Icon.gear : Icon.user}
             </button>
             {menuOpen && (
               <div className="menu profile-menu" role="menu">
-                <div className="profile-head">
-                  <strong>Lucas</strong>
-                  <small>Student</small>
-                </div>
+                {!settings.focusMode && (
+                  <div className="profile-head">
+                    <strong>Lucas</strong>
+                    <small>Student</small>
+                  </div>
+                )}
                 <button role="menuitem" className={screen === 'achievements' ? 'on' : ''} onClick={() => go('achievements')}>
                   {Icon.trophy} Achievements
                 </button>
@@ -1134,17 +1211,20 @@ export default function App() {
                 <button role="menuitem" onClick={openSettings}>
                   {Icon.gear} Settings
                 </button>
-                <button role="menuitem" onClick={() => openMenu('Help')}>
-                  {Icon.help} Help
-                </button>
-                <hr />
-                <button role="menuitem" onClick={() => openMenu('Log out')}>
-                  {Icon.logout} Log out
-                </button>
+                {!settings.focusMode && (
+                  <>
+                    <button role="menuitem" onClick={() => openMenu('Help')}>
+                      {Icon.help} Help
+                    </button>
+                    <hr />
+                    <button role="menuitem" onClick={() => openMenu('Log out')}>
+                      {Icon.logout} Log out
+                    </button>
+                  </>
+                )}
               </div>
             )}
           </div>
-          )}
         </div>
       </header>
 
@@ -1164,6 +1244,7 @@ export default function App() {
       )}
       {settingsOpen && SettingsPanel()}
       {themeOpen && ThemePanel()}
+      {focusIntroOpen && FocusIntro()}
     </div>
   )
 }

@@ -54,64 +54,86 @@ small {
   position: relative;
 }
 
-.focus-card {
-  position: absolute;
-  right: 0;
-  top: 50px;
-  z-index: 30;
-  width: 290px;
+/* Focus Mode intro: centered message the first times it turns on */
+.focus-intro {
+  width: 100%;
+  max-width: 380px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 16px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  box-shadow: 0 12px 32px rgba(17, 24, 39, 0.12);
+  align-items: center;
+  gap: 14px;
+  padding: 28px 24px 24px;
+  text-align: center;
 }
-.focus-card-title {
-  font-weight: 600;
+.focus-intro-icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--good) 15%, transparent);
+  color: var(--good);
 }
-.focus-card ul {
+.focus-intro-icon svg {
+  width: 28px;
+  height: 28px;
+}
+.focus-intro h2 {
+  font-size: 1.3rem;
+}
+.focus-intro ul {
   list-style: none;
+  width: 100%;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  font-size: 0.9rem;
+  gap: 12px;
+  text-align: left;
 }
-.focus-card li {
+.focus-intro li {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  align-items: flex-start;
+  gap: 12px;
 }
-.focus-card li.is-off {
-  color: var(--muted);
+.focus-intro li strong {
+  display: block;
+  font-weight: 600;
 }
 .focus-mark {
   display: grid;
   place-items: center;
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
+  margin-top: 1px;
   border-radius: 50%;
+  background: var(--good);
+  color: #fff;
   flex-shrink: 0;
 }
 .focus-mark svg {
-  width: 13px;
-  height: 13px;
+  width: 14px;
+  height: 14px;
   stroke-width: 3;
 }
-.is-on .focus-mark {
-  background: var(--good);
-  color: #fff;
-}
-.is-off .focus-mark {
-  background: var(--subtle);
+.dont-show {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  align-self: flex-start;
+  min-height: 44px;
+  font-size: 0.9rem;
   color: var(--muted);
+  cursor: pointer;
 }
-.focus-card .btn {
-  margin-top: 4px;
+.dont-show input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--accent);
+}
+.overlay.centered {
+  place-items: center;
+  padding: 16px;
 }
 
 .icon-btn {
@@ -1432,14 +1454,14 @@ small {
 .motion-on .emblem {
   animation: pop 0.4s ease;
 }
-.motion-on .menu,
-.motion-on .focus-card {
+.motion-on .menu {
   animation: fade-down 0.15s ease;
 }
 .motion-on .overlay {
   animation: fade 0.15s ease;
 }
-.motion-on .sheet {
+.motion-on .sheet,
+.motion-on .focus-intro {
   animation: fade-up 0.2s ease;
 }
 @media (max-width: 640px) {
@@ -1818,7 +1840,6 @@ small {
     max-width: none;
     transform: none;
   }
-  .focus-card,
   .profile-menu {
     position: fixed;
     top: 62px;
@@ -1922,4 +1943,152 @@ small {
 .summary-line {
   font-size: 0.88rem;
   color: var(--muted);
+}
+
+/* Teacher video: autoplays with Focus Mode off, blocked with it on */
+.video {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.video-screen {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 150px;
+  background: #1f2330;
+  color: #fff;
+}
+.video-play {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  color: #1f2330;
+}
+.video-play svg {
+  width: 26px;
+  height: 26px;
+}
+.video-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+.video-live svg {
+  width: 16px;
+  height: 16px;
+}
+.video-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+}
+.video-bar span {
+  display: block;
+  width: 35%;
+  height: 100%;
+  background: #ef4444;
+}
+.motion-on .video.playing .video-bar span {
+  animation: video-progress 8s linear infinite;
+}
+.motion-on .video.playing .video-screen {
+  animation: video-flicker 1.4s ease-in-out infinite;
+}
+@keyframes video-progress {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+@keyframes video-flicker {
+  50% {
+    background: #2c3246;
+  }
+}
+.video-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+}
+.video-info strong {
+  display: block;
+  font-weight: 600;
+}
+.video-note {
+  color: var(--good);
+  font-weight: 600;
+  text-align: right;
+}
+.avatar.gear {
+  background: var(--subtle);
+  color: var(--muted);
+}
+
+/* Linked reading: shows an ad with Focus Mode off, hides it with Focus Mode on */
+.article {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--subtle);
+  font-size: 0.95rem;
+}
+.article-title {
+  font-weight: 600;
+}
+.article-ad {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #ff5f6d, #ffc371);
+  color: #3b0a0a;
+}
+.article-ad small {
+  color: #5a1a0f;
+}
+.ad-tag {
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.7);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+.motion-on .article-ad {
+  animation: ad-pulse 1.2s ease-in-out infinite;
+}
+@keyframes ad-pulse {
+  50% {
+    transform: scale(1.02);
+    filter: brightness(1.1);
+  }
+}
+.ad-hidden {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--good);
+}
+.ad-hidden svg {
+  width: 14px;
+  height: 14px;
+  stroke-width: 3;
 }
