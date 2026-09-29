@@ -213,6 +213,8 @@ export default function App() {
   const [filter, setFilter] = useState('todo')
   const [focusIntroOpen, setFocusIntroOpen] = useState(false)
   const [logoutOpen, setLogoutOpen] = useState(false)
+  const [helpOpen, setHelpOpen] = useState(false)
+  const [helpNote, setHelpNote] = useState('')
   const [adShown, setAdShown] = useState(false)
   const [adIndex, setAdIndex] = useState(0)
   const [dontShowAgain, setDontShowAgain] = useState(false)
@@ -268,13 +270,14 @@ export default function App() {
   }, [menuOpen])
 
   useEffect(() => {
-    if (!settingsOpen && !themeOpen && !focusIntroOpen && !logoutOpen) return
+    if (!settingsOpen && !themeOpen && !focusIntroOpen && !logoutOpen && !helpOpen) return
     const onKey = (e) => {
       if (e.key !== 'Escape') return
       setSettingsOpen(false)
       setThemeOpen(false)
       setFocusIntroOpen(false)
       setLogoutOpen(false)
+      setHelpOpen(false)
     }
     document.body.style.overflow = 'hidden'
     window.addEventListener('keydown', onKey)
@@ -282,7 +285,7 @@ export default function App() {
       document.body.style.overflow = ''
       window.removeEventListener('keydown', onKey)
     }
-  }, [settingsOpen, themeOpen, focusIntroOpen, logoutOpen])
+  }, [settingsOpen, themeOpen, focusIntroOpen, logoutOpen, helpOpen])
 
   useEffect(() => {
     if (state.settings.focusMode) return
@@ -1113,6 +1116,88 @@ export default function App() {
     )
   }
 
+  // Help: tips for the current step, a pre-filled message to the teacher, and a short guide.
+  const openHelp = () => {
+    setMenuOpen(false)
+    setHelpNote('')
+    setHelpOpen(true)
+  }
+  const helpContext = inTask
+    ? `I'm stuck on "${task.title}", ${prog.reviewing ? 'the final check' : `${L.step} ${prog.step + 1}: ${task.steps[prog.step].title}`}.`
+    : 'I have a question about my tasks.'
+  const sendHelp = () => {
+    setHelpOpen(false)
+    setToast('Message sent to your teacher.')
+  }
+
+  function HelpPanel() {
+    return (
+      <div className="overlay" onClick={(e) => e.target === e.currentTarget && setHelpOpen(false)}>
+        <div className="card sheet" role="dialog" aria-modal="true" aria-labelledby="help-title">
+          <div className="sheet-head">
+            <h2 id="help-title">Help</h2>
+            <button className="icon-btn" onClick={() => setHelpOpen(false)} aria-label="Close">
+              {Icon.x}
+            </button>
+          </div>
+          <div className="sheet-body help-body">
+            {inTask && (
+              <section className="help-section">
+                <h3>Stuck on this {L.step.toLowerCase()}?</h3>
+                <ul className="help-tips">
+                  <li>Read your goal at the top again.</li>
+                  <li>Do just the first unticked item.</li>
+                  <li>
+                    Take a short break. Your spot is saved.
+                    <button
+                      className="btn"
+                      onClick={() => {
+                        setHelpOpen(false)
+                        pauseAndSave()
+                      }}
+                    >
+                      Take a break
+                    </button>
+                  </li>
+                </ul>
+              </section>
+            )}
+
+            <section className="help-section">
+              <h3>Ask your teacher</h3>
+              <p className="help-message">{helpContext}</p>
+              <label className="help-note">
+                <span>Add a note (optional)</span>
+                <textarea rows={2} value={helpNote} onChange={(e) => setHelpNote(e.target.value)} />
+              </label>
+              <button className="btn primary big" onClick={sendHelp}>
+                Send to teacher
+              </button>
+            </section>
+
+            <section className="help-section">
+              <h3>How FocusPath works</h3>
+              <ul className="help-guide">
+                <li>
+                  <strong>Goal Anchor</strong> What you're working on, always at the top.
+                </li>
+                <li>
+                  <strong>{settings.theme === 'classic' ? 'Progress line' : 'Frets'}</strong> How far along you are.
+                </li>
+                <li>
+                  <strong>Focus switch</strong> Hides ads, stops motion, one task at a time.
+                </li>
+                <li>
+                  <strong>Pause &amp; Save</strong> Stop anytime; continue right where you left off.
+                </li>
+              </ul>
+            </section>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   function ThemePanel() {
     return Sheet(
       'Theme',
@@ -1187,11 +1272,6 @@ export default function App() {
         </div>
       </div>
     )
-  }
-
-  const openMenu = (item) => {
-    setMenuOpen(false)
-    setToast(`${item} is part of the full learning platform.`)
   }
 
   function FocusIntro() {
@@ -1288,11 +1368,11 @@ export default function App() {
                 <button role="menuitem" onClick={openSettings}>
                   {Icon.gear} Settings
                 </button>
+                <button role="menuitem" onClick={openHelp}>
+                  {Icon.help} Help
+                </button>
                 {!settings.focusMode && (
                   <>
-                    <button role="menuitem" onClick={() => openMenu('Help')}>
-                      {Icon.help} Help
-                    </button>
                     <hr />
                     <button
                       role="menuitem"
@@ -1329,6 +1409,7 @@ export default function App() {
       {themeOpen && ThemePanel()}
       {focusIntroOpen && FocusIntro()}
       {logoutOpen && LogoutDialog()}
+      {helpOpen && HelpPanel()}
       {adShown && !settings.focusMode && AdPopup()}
     </div>
   )

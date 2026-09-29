@@ -2138,3 +2138,77 @@ small {
     bottom: 104px;
   }
 }
+
+/* Help panel */
+.help-body {
+  gap: 4px;
+}
+.help-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 0;
+  border-top: 1px solid var(--line);
+}
+.help-body > .help-section:first-child {
+  border-top: 0;
+}
+.help-section h3 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+.help-tips,
+.help-guide {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.92rem;
+}
+.help-tips li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--subtle);
+}
+.help-guide strong {
+  display: block;
+  font-weight: 600;
+}
+.help-guide li {
+  color: var(--muted);
+}
+.help-guide li strong {
+  color: var(--text);
+}
+.help-message {
+  padding: 10px 12px;
+  border-left: 3px solid var(--accent);
+  border-radius: 0;
+  background: var(--accent-soft);
+  font-size: 0.92rem;
+}
+.help-note {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.help-note textarea {
+  width: 100%;
+  min-height: 60px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  resize: vertical;
+}
