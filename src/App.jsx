@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { ADS, BADGES, SIZES, dueLabel, STEP_XP, TASKS, THEMES, XP_PER_LEVEL, isUnlocked, labels, levelInfo, themesUnlockedBetween } from './data.js'
+import { BADGES, SIZES, dueLabel, STEP_XP, TASKS, THEMES, XP_PER_LEVEL, isUnlocked, labels, levelInfo, themesUnlockedBetween } from './data.js'
+import lucasAvatar from './assets/lucas-avatar.webp'
 import './App.css'
 
 const STORAGE_KEY = 'focuspath-prototype-v1'
@@ -41,11 +42,30 @@ const formatTime = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0
 /* ---------- Icons ---------- */
 
 const Icon = {
+  // FocusPath logo: a dart in the bullseye (hitting your goal)
+  logo: (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="10.5" cy="13.5" r="8" />
+      <circle cx="10.5" cy="13.5" r="4.2" />
+      <circle cx="10.5" cy="13.5" r="1.2" fill="currentColor" stroke="none" />
+      <path d="M10.5 13.5 19 5" />
+      <path d="M19 5V1.8M19 5h3.2" />
+    </svg>
+  ),
   user: (
     <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></svg>
   ),
   pick: (
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21c-2.5-2.2-7-7.4-7-12 0-3.3 3.1-5 7-5s7 1.7 7 5c0 4.6-4.5 9.8-7 12z" fill="currentColor" stroke="none" /></svg>
+  ),
+  note: (
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l11-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="17" cy="16" r="3" /></svg>
+  ),
+  comeback: (
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7" /><path d="M3 4v5h5" /></svg>
+  ),
+  sparkle: (
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" /><path d="M19 16l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z" /></svg>
   ),
   palette: (
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 0 0 0 18c1.1 0 1.6-.8 1.6-1.6 0-.9-.7-1.4-.7-2.2 0-.9.7-1.6 1.6-1.6H17a4 4 0 0 0 4-4c0-4.7-4-8.6-9-8.6z" /><circle cx="7.5" cy="11" r="1" /><circle cx="10" cy="7" r="1" /><circle cx="15" cy="7.5" r="1" /></svg>
@@ -160,13 +180,22 @@ function LevelBar({ xp, theme }) {
 
 function Badge({ badge, earned }) {
   return (
-    <div className={earned ? 'badge earned' : 'badge locked'}>
-      <span className="badge-icon">{earned ? Icon.star : Icon.lock}</span>
-      <div>
+    <li className={earned ? 'badge-row earned' : 'badge-row locked'}>
+      <span className="badge-row-icon">{Icon[badge.icon]}</span>
+      <span className="badge-row-text">
         <strong>{badge.name}</strong>
-        <small>{earned ? 'Earned' : badge.how}</small>
-      </div>
-    </div>
+        <small>{badge.how}</small>
+      </span>
+      <span className="badge-row-status">
+        {earned ? (
+          <>
+            {Icon.check} Earned
+          </>
+        ) : (
+          <span aria-label="Locked">{Icon.lock}</span>
+        )}
+      </span>
+    </li>
   )
 }
 
@@ -214,9 +243,8 @@ export default function App() {
   const [focusIntroOpen, setFocusIntroOpen] = useState(false)
   const [logoutOpen, setLogoutOpen] = useState(false)
   const [helpOpen, setHelpOpen] = useState(false)
+  const [profileOpen, setProfileOpen] = useState(false)
   const [helpNote, setHelpNote] = useState('')
-  const [adShown, setAdShown] = useState(false)
-  const [adIndex, setAdIndex] = useState(0)
   const [dontShowAgain, setDontShowAgain] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [themeOpen, setThemeOpen] = useState(false)
@@ -270,7 +298,7 @@ export default function App() {
   }, [menuOpen])
 
   useEffect(() => {
-    if (!settingsOpen && !themeOpen && !focusIntroOpen && !logoutOpen && !helpOpen) return
+    if (!settingsOpen && !themeOpen && !focusIntroOpen && !logoutOpen && !helpOpen && !profileOpen) return
     const onKey = (e) => {
       if (e.key !== 'Escape') return
       setSettingsOpen(false)
@@ -278,6 +306,7 @@ export default function App() {
       setFocusIntroOpen(false)
       setLogoutOpen(false)
       setHelpOpen(false)
+      setProfileOpen(false)
     }
     document.body.style.overflow = 'hidden'
     window.addEventListener('keydown', onKey)
@@ -285,13 +314,13 @@ export default function App() {
       document.body.style.overflow = ''
       window.removeEventListener('keydown', onKey)
     }
-  }, [settingsOpen, themeOpen, focusIntroOpen, logoutOpen, helpOpen])
+  }, [settingsOpen, themeOpen, focusIntroOpen, logoutOpen, helpOpen, profileOpen])
 
+  // Phone browser bar matches the themed top bar.
   useEffect(() => {
-    if (state.settings.focusMode) return
-    const id = setTimeout(() => setAdShown(true), 3000)
-    return () => clearTimeout(id)
-  }, [state.settings.focusMode])
+    const colors = { classic: '#15803d', acoustic: '#6b3a1e', electric: '#1f2330', headliner: '#4c1d95' }
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', colors[state.settings.theme] || colors.classic)
+  }, [state.settings.theme])
 
   useEffect(() => {
     if (!toast) return
@@ -313,7 +342,6 @@ export default function App() {
   // Turning it on explains what it does, until he ticks "Don't show this again".
   const setFocus = (on) => {
     setSetting('focusMode', on)
-    setAdShown(false)
     if (on && !settings.hideFocusIntro) {
       setDontShowAgain(false)
       setFocusIntroOpen(true)
@@ -956,11 +984,11 @@ export default function App() {
           {newBadges.length > 0 && (
             <div className="new-badges">
               <p className="kicker">Badges unlocked</p>
-              <div className="badge-grid">
+              <ul className="badge-list">
                 {newBadges.map((id) => (
                   <Badge key={id} badge={BADGES.find((b) => b.id === id)} earned />
                 ))}
-              </div>
+              </ul>
             </div>
           )}
           {newThemes.length > 0 && (
@@ -997,51 +1025,25 @@ export default function App() {
           </button>
           <h1 className="list-title">Achievements</h1>
         </div>
-        <h2 className="section-title">
-          {L.finished} {L.trophy}
-        </h2>
-        {doneTasks.length === 0 ? (
-          <p className="muted">None yet.</p>
-        ) : (
-          <ul className="trophies">
-            {doneTasks.map((t) => {
-              const p = state.progress[t.id]
-              return (
-                <li key={t.id} className="card trophy-card">
-                  <span className="trophy-icon" aria-hidden="true">
-                    {L.trophy}
-                  </span>
-                  <div>
-                    <strong>{t.title}</strong>
-                    <small className="muted">
-                      {t.subject} · {SIZES[t.size].label} · Finished{' '}
-                      {new Date(p.doneAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
-                    </small>
-                  </div>
-                  <span className="trophy-xp">+{p.xpEarned} XP</span>
-                </li>
-              )
-            })}
-          </ul>
-        )}
-
         <h2 className="section-title">Badge shelf</h2>
-        <div className="badge-grid">
+        <ul className="badge-list">
           {BADGES.map((b) => (
             <Badge key={b.id} badge={b} earned={state.badges.includes(b.id)} />
           ))}
-        </div>
+        </ul>
       </section>
     )
   }
 
   const openSettings = () => {
     setMenuOpen(false)
+    setProfileOpen(false)
     setDraft({ ...settings })
     setSettingsOpen(true)
   }
   const openTheme = () => {
     setMenuOpen(false)
+    setProfileOpen(false)
     setDraft({ theme: settings.theme })
     setThemeOpen(true)
   }
@@ -1060,15 +1062,21 @@ export default function App() {
   }
   const setDraftValue = (key, value) => setDraft((d) => ({ ...d, [key]: value }))
 
+  // Theme and Settings open from Profile, so Back returns there (without saving).
+  const backToProfile = () => {
+    closeSheets()
+    setProfileOpen(true)
+  }
+
   function Sheet(title, body) {
     return (
-      <div className="overlay" onClick={(e) => e.target === e.currentTarget && closeSheets()}>
-        <div className="card sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
-          <div className="sheet-head">
-            <h2 id="sheet-title">{title}</h2>
-            <button className="icon-btn" onClick={closeSheets} aria-label="Close">
-              {Icon.x}
+      <div className="overlay centered" onClick={(e) => e.target === e.currentTarget && closeSheets()}>
+        <div className="card sheet profile-box" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+          <div className="sheet-head back-head">
+            <button className="icon-btn back-btn" onClick={backToProfile} aria-label="Back to Profile">
+              {Icon.back}
             </button>
+            <h2 id="sheet-title">{title}</h2>
           </div>
           <div className="sheet-body">{body}</div>
           <div className="sheet-foot">
@@ -1119,6 +1127,7 @@ export default function App() {
   // Help: tips for the current step, a pre-filled message to the teacher, and a short guide.
   const openHelp = () => {
     setMenuOpen(false)
+    setProfileOpen(false)
     setHelpNote('')
     setHelpOpen(true)
   }
@@ -1128,6 +1137,74 @@ export default function App() {
   const sendHelp = () => {
     setHelpOpen(false)
     setToast('Message sent to your teacher.')
+  }
+
+  // Profile: Focus Mode switch and the places Lucas can go from here.
+  function ProfilePanel() {
+    return (
+      <div className="overlay centered" onClick={(e) => e.target === e.currentTarget && setProfileOpen(false)}>
+        <div className="card sheet profile-box" role="dialog" aria-modal="true" aria-labelledby="profile-title">
+          <div className="sheet-head">
+            <h2 id="profile-title">Profile</h2>
+            <button className="icon-btn" onClick={() => setProfileOpen(false)} aria-label="Close">
+              {Icon.x}
+            </button>
+          </div>
+          <div className="sheet-body profile-body">
+            <div className="profile-hero">
+              <img src={lucasAvatar} alt="" />
+              <strong>Lucas</strong>
+              <span className="profile-xp">
+                <span className="chip-star">{Icon.star}</span> {state.xp} XP
+              </span>
+            </div>
+            <div className="profile-actions">
+              <button onClick={openTheme}>
+                {Icon.palette} Theme <small>{THEMES.find((t) => t.id === settings.theme)?.name}</small>
+              </button>
+              <button onClick={openSettings}>
+                {Icon.gear} Settings
+              </button>
+              <button onClick={openHelp}>
+                {Icon.help} Help
+              </button>
+              {!settings.focusMode && (
+                <button
+                  className="logout-row"
+                  onClick={() => {
+                    setProfileOpen(false)
+                    setLogoutOpen(true)
+                  }}
+                >
+                  {Icon.logout} Log out
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Bottom nav: only on Tasks and Achievements, and never in Focus Mode (fewer places to drift).
+  const showBottomNav = !settings.focusMode && ['tasks', 'achievements'].includes(screen)
+
+  function BottomNav() {
+    const tabs = [
+      { id: 'tasks', label: 'Tasks', icon: Icon.list, on: screen === 'tasks' && !profileOpen, act: () => go('tasks') },
+      { id: 'achievements', label: 'Achievements', icon: Icon.trophy, on: screen === 'achievements' && !profileOpen, act: () => go('achievements') },
+      { id: 'profile', label: 'Profile', icon: Icon.user, on: profileOpen, act: () => setProfileOpen(true) },
+    ]
+    return (
+      <nav className="bottom-nav" aria-label="Main">
+        {tabs.map((t) => (
+          <button key={t.id} className={t.on ? 'on' : ''} aria-current={t.on ? 'page' : undefined} onClick={t.act}>
+            {t.icon}
+            <span>{t.label}</span>
+          </button>
+        ))}
+      </nav>
+    )
   }
 
   function HelpPanel() {
@@ -1224,36 +1301,6 @@ export default function App() {
     go('tasks')
   }
 
-  // Sample pop-up ad, like a normal learning site. Focus Mode never shows it.
-  // Closing one ad brings up the next one shortly after, and the three repeat.
-  const closeAd = () => {
-    setAdShown(false)
-    setAdIndex((i) => (i + 1) % ADS.length)
-    setTimeout(() => setAdShown(true), 1500)
-  }
-
-  function AdPopup() {
-    const ad = ADS[adIndex]
-    return (
-      <div
-        key={adIndex}
-        className="ad-popup"
-        role="complementary"
-        aria-label="Advertisement"
-        style={{ background: `linear-gradient(90deg, ${ad.colors[0]}, ${ad.colors[1]})` }}
-      >
-        <span className="ad-tag">Ad</span>
-        <span className="ad-text">
-          <strong>{ad.name}</strong>
-          <small>{ad.text}</small>
-        </span>
-        <button className="ad-close" onClick={closeAd} aria-label="Close ad">
-          {Icon.x}
-        </button>
-      </div>
-    )
-  }
-
   function LogoutDialog() {
     return (
       <div className="overlay centered" onClick={(e) => e.target === e.currentTarget && setLogoutOpen(false)}>
@@ -1320,74 +1367,29 @@ export default function App() {
 
   return (
     <div
-      className={`app theme-${settings.theme} ${settings.motion && !settings.focusMode ? 'motion-on' : 'motion-off'}${adShown && !settings.focusMode ? ' has-ad' : ''}`}
+      className={`app theme-${settings.theme} ${settings.motion && !settings.focusMode ? 'motion-on' : 'motion-off'}${showBottomNav ? ' has-nav' : ''}`}
     >
       <header className="topbar">
         <button className="logo" onClick={() => (inTask ? pauseAndSave() : go('tasks'))} aria-label="FocusPath, your tasks">
-          <span className="logo-mark">{Icon.target}</span>
+          <span className="logo-mark">{Icon.logo}</span>
           <span className="logo-text">FocusPath</span>
         </button>
         <div className="topbar-right">
-          <div className="focus-wrap">
-            <button
-              className={settings.focusMode ? 'focus-switch on' : 'focus-switch'}
-              onClick={() => setFocus(!settings.focusMode)}
-              role="switch"
-              aria-checked={settings.focusMode}
-            >
-              <span className="fs-dot" />
-              <span className="fs-label">
-                Focus<span className="fs-long"> Mode</span>
-              </span>
-              <span className="fs-state">{settings.focusMode ? 'ON' : 'OFF'}</span>
-            </button>
-          </div>
-          <div className="menu-wrap">
-            <button
-              className={settings.focusMode ? 'avatar gear' : 'avatar'}
-              onClick={() => setMenuOpen((o) => !o)}
-              aria-label={settings.focusMode ? 'Menu' : 'Profile menu'}
-              aria-expanded={menuOpen}
-            >
-              {settings.focusMode ? Icon.gear : Icon.user}
-            </button>
-            {menuOpen && (
-              <div className="menu profile-menu" role="menu">
-                {!settings.focusMode && (
-                  <div className="profile-head">
-                    <strong>Lucas</strong>
-                    <small>Student</small>
-                  </div>
-                )}
-                <button role="menuitem" className={screen === 'achievements' ? 'on' : ''} onClick={() => go('achievements')}>
-                  {Icon.trophy} Achievements
-                </button>
-                <button role="menuitem" onClick={openTheme}>
-                  {Icon.palette} Theme
-                </button>
-                <button role="menuitem" onClick={openSettings}>
-                  {Icon.gear} Settings
-                </button>
-                <button role="menuitem" onClick={openHelp}>
-                  {Icon.help} Help
-                </button>
-                {!settings.focusMode && (
-                  <>
-                    <hr />
-                    <button
-                      role="menuitem"
-                      onClick={() => {
-                        setMenuOpen(false)
-                        setLogoutOpen(true)
-                      }}
-                    >
-                      {Icon.logout} Log out
-                    </button>
-                  </>
-                )}
-              </div>
-            )}
-          </div>
+          <button
+            className={settings.focusMode ? 'focus-btn on' : 'focus-btn'}
+            onClick={() => setFocus(!settings.focusMode)}
+            role="switch"
+            aria-checked={settings.focusMode}
+            aria-label="Focus Mode"
+          >
+            <span className="fb-dot" aria-hidden="true" />
+            <span className="fb-label" aria-hidden="true">
+              Focus
+            </span>
+            <span className="fb-state" aria-hidden="true">
+              {settings.focusMode ? 'ON' : 'OFF'}
+            </span>
+          </button>
         </div>
       </header>
 
@@ -1410,7 +1412,8 @@ export default function App() {
       {focusIntroOpen && FocusIntro()}
       {logoutOpen && LogoutDialog()}
       {helpOpen && HelpPanel()}
-      {adShown && !settings.focusMode && AdPopup()}
+      {profileOpen && ProfilePanel()}
+      {showBottomNav && BottomNav()}
     </div>
   )
 }

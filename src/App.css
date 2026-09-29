@@ -910,41 +910,6 @@ small {
   font-size: 1.05rem;
   font-weight: 600;
 }
-.trophies {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.trophy-card {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 16px 20px;
-}
-.trophy-icon {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: var(--reward-soft);
-  font-size: 1.3rem;
-}
-.trophy-card > div {
-  flex: 1;
-  min-width: 0;
-}
-.trophy-card strong {
-  font-weight: 600;
-}
-.trophy-xp {
-  font-weight: 600;
-  color: var(--reward);
-  white-space: nowrap;
-}
 .badge-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -1087,7 +1052,7 @@ small {
   flex-shrink: 0;
 }
 .swatch-classic {
-  background: linear-gradient(90deg, #3b5bdb 0 35%, #eef2ff 35%);
+  background: linear-gradient(90deg, #15803d 0 35%, #e7f5ec 35%);
 }
 .swatch-acoustic {
   background:
@@ -2037,32 +2002,6 @@ small {
   color: var(--muted);
 }
 
-.ad-tag {
-  padding: 2px 8px;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.85);
-  color: #1f2330;
-  text-shadow: none;
-  font-size: 0.72rem;
-  font-weight: 700;
-}
-.motion-on .ad-popup {
-  animation:
-    ad-rise 0.35s ease,
-    ad-pulse 1.2s ease-in-out 0.35s infinite;
-}
-@keyframes ad-rise {
-  from {
-    transform: translateY(40px);
-    opacity: 0;
-  }
-}
-@keyframes ad-pulse {
-  50% {
-    transform: scale(1.02);
-    filter: brightness(1.1);
-  }
-}
 
 .logout-icon {
   background: var(--subtle);
@@ -2087,56 +2026,7 @@ small {
   color: var(--accent);
 }
 
-/* Pop-up ad at the bottom (Focus Mode off only) */
-.ad-popup {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 24px;
-  z-index: 45;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: min(340px, calc(100% - 64px));
-  margin: 0 auto;
-  padding: 12px 12px 12px 16px;
-  border-radius: 14px;
-  color: #fff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
-}
-.ad-text {
-  flex: 1;
-  min-width: 0;
-}
-.ad-text strong {
-  display: block;
-}
-.ad-text small {
-  color: #fff;
-}
-.ad-close {
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border: 0;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.85);
-  color: #1f2330;
-  flex-shrink: 0;
-}
-.ad-close svg {
-  width: 16px;
-  height: 16px;
-}
-.has-ad .main {
-  padding-bottom: 120px;
-}
 @media (max-width: 640px) {
-  .has-ad .card .actions {
-    bottom: 104px;
-  }
 }
 
 /* Help panel */
@@ -2211,4 +2101,635 @@ small {
   color: var(--text);
   font: inherit;
   resize: vertical;
+}
+
+/* Lucas's profile picture */
+.avatar {
+  overflow: hidden;
+}
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.profile-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.profile-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* Header controls: smaller, white; tap area stays 44px (WCAG 2.5.5) */
+.focus-switch,
+.avatar {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+.focus-switch::after,
+.avatar::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+}
+.focus-switch {
+  min-height: 36px;
+  gap: 8px;
+  padding: 3px 4px 3px 12px;
+  font-size: 0.85rem;
+}
+.fs-state {
+  padding: 3px 10px;
+  font-size: 0.75rem;
+}
+.fs-dot {
+  width: 8px;
+  height: 8px;
+}
+.avatar,
+.avatar.gear {
+  width: 36px;
+  height: 36px;
+  background: var(--surface);
+  color: var(--muted);
+}
+.avatar svg {
+  width: 18px;
+  height: 18px;
+}
+@media (max-width: 640px) {
+  .focus-switch {
+    padding-left: 10px;
+    font-size: 0.8rem;
+  }
+}
+
+/* Green top bar */
+.topbar {
+  background: #15803d;
+  border-bottom-color: #136c34;
+}
+.topbar .logo-text,
+.topbar .logo-mark {
+  color: #fff;
+}
+@media (prefers-color-scheme: dark) {
+  .topbar {
+    background: #14532d;
+    border-bottom-color: #0f3f22;
+  }
+}
+
+/* FocusPath logo badge */
+.topbar .logo-mark {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  background: none;
+  color: #fff;
+}
+.topbar .logo-mark svg {
+  width: 28px;
+  height: 28px;
+  stroke-width: 2.2;
+}
+
+/* Compact Focus switch: target icon + ON/OFF ("Focus" label on larger screens) */
+.focus-switch {
+  gap: 5px;
+  padding: 0 11px 0 8px;
+  color: var(--muted);
+}
+.focus-switch.on {
+  color: var(--good);
+}
+.fs-icon {
+  display: inline-flex;
+}
+.fs-icon svg {
+  width: 18px;
+  height: 18px;
+}
+.fs-label {
+  color: var(--text);
+  font-weight: 600;
+  margin-right: 2px;
+}
+.fs-state,
+.focus-switch.on .fs-state {
+  padding: 0;
+  background: none;
+  color: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+@media (max-width: 640px) {
+  .fs-label {
+    display: none;
+  }
+  .focus-switch {
+    padding: 0 10px 0 7px;
+  }
+}
+
+/* Focus Mode lives in the menu; a green dot on the menu button shows it's on */
+.menu-wrap {
+  position: relative;
+}
+.focus-dot {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #22c55e;
+  border: 2px solid #15803d;
+  pointer-events: none;
+}
+.menu-focus {
+  font-weight: 600;
+}
+.menu-focus > svg {
+  color: var(--good);
+}
+.mini-switch {
+  position: relative;
+  margin-left: auto;
+  width: 40px;
+  height: 24px;
+  border-radius: 12px;
+  background: var(--line);
+  flex-shrink: 0;
+}
+.mini-switch span {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+.mini-switch.on {
+  background: var(--good);
+}
+.mini-switch.on span {
+  left: 19px;
+}
+.profile-menu {
+  width: 240px;
+}
+
+/* Profile panel */
+.profile-body {
+  gap: 16px;
+  padding-top: 16px;
+}
+.profile-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+}
+.profile-hero img {
+  width: 84px;
+  height: 84px;
+  margin-bottom: 6px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+.profile-hero strong {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+.interests {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+.interests span {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--subtle);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.profile-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.stat {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--subtle);
+}
+.stat strong {
+  display: block;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+.profile-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+  font-size: 0.95rem;
+}
+.profile-row span {
+  color: var(--muted);
+}
+.profile-row strong {
+  font-weight: 600;
+}
+.is-on-text {
+  color: var(--good);
+}
+
+/* Profile: a centered box that fits the screen (not a bottom sheet) */
+.overlay.centered .sheet.profile-box,
+.sheet.profile-box {
+  width: min(440px, 100%);
+  max-width: none;
+  max-height: calc(100vh - 32px);
+  max-height: calc(100dvh - 32px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.profile-box .profile-hero strong {
+  font-size: clamp(1.15rem, 4.5vw, 1.4rem);
+}
+.profile-box .stat strong {
+  font-size: clamp(1.05rem, 4vw, 1.3rem);
+}
+@media (max-width: 640px) {
+  .overlay.centered {
+    padding: 16px;
+  }
+  .sheet.profile-box {
+    border-radius: var(--radius);
+  }
+}
+
+/* Phones: the profile menu spans the screen width, centered under the top bar */
+@media (max-width: 640px) {
+  .profile-menu {
+    left: 16px;
+    right: 16px;
+    width: auto;
+  }
+}
+
+/* Bottom nav (Tasks · Achievements · Profile), hidden in Focus Mode and inside tasks */
+.bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  z-index: 30;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  width: min(420px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: 0 10px 30px rgba(17, 24, 39, 0.12);
+}
+.bottom-nav button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-height: 52px;
+  border: 0;
+  border-radius: 14px;
+  background: none;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+.bottom-nav button svg {
+  width: 22px;
+  height: 22px;
+}
+.bottom-nav button.on {
+  color: var(--accent);
+  font-weight: 700;
+}
+.bottom-nav button.on svg {
+  stroke-width: 2.4;
+}
+.has-nav .main {
+  padding-bottom: 110px;
+}
+.has-nav .toast {
+  bottom: 96px;
+}
+@media (max-width: 640px) {
+  .has-nav .toast {
+    bottom: 96px;
+  }
+}
+
+/* Profile box actions (everything from the old top-right menu) */
+.profile-actions {
+  display: flex;
+  flex-direction: column;
+}
+.profile-actions button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  text-align: left;
+  font-size: 0.98rem;
+}
+.profile-actions button:hover {
+  background: var(--subtle);
+}
+.profile-actions button > svg {
+  width: 20px;
+  height: 20px;
+  color: var(--muted);
+}
+.profile-actions .menu-focus > svg {
+  color: var(--good);
+}
+.profile-actions small {
+  margin-left: auto;
+  color: var(--muted);
+}
+.profile-actions .logout-row {
+  margin-top: 6px;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+}
+
+/* The top-right picture is the Focus Mode switch: a green ring and dot when on */
+.avatar.focus-on {
+  border: 2px solid #22c55e;
+}
+
+/* Profile tab shows Lucas's picture */
+.nav-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+.bottom-nav button.on .nav-avatar {
+  border: 2px solid var(--accent);
+}
+
+
+/* Focus Mode button (first design): white pill, dot, "Focus", ON/OFF pill */
+.focus-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 34px;
+  padding: 0 4px 0 12px;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: #111827;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.focus-btn::after {
+  content: '';
+  position: absolute;
+  inset: -5px -2px;
+}
+.fb-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #9ca3af;
+}
+.focus-btn.on .fb-dot {
+  background: #16a34a;
+}
+.fb-state {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  color: #6b7280;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+.focus-btn.on .fb-state {
+  background: #16a34a;
+  color: #fff;
+}
+
+/* Calmer task cards: color only on the subject bar and the due tag */
+.tcard .size-pill,
+.tcard .size-pill.pill-big {
+  background: var(--subtle);
+  color: var(--muted);
+}
+.tcard.suggested {
+  border-color: var(--line);
+  border-left-color: var(--c);
+}
+
+/* Plain task cards: no colored edge, tags as plain text */
+.tcard,
+.tcard.suggested {
+  border: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+  padding-left: 18px;
+}
+.tcard .tcard-meta {
+  gap: 0;
+  margin-top: 2px;
+}
+.tcard .due-tag,
+.tcard .size-pill,
+.tcard .size-pill.pill-big {
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  font-size: 0.88rem;
+}
+.tcard .due-tag {
+  color: var(--accent);
+  font-weight: 600;
+}
+.tcard .size-pill {
+  color: var(--muted);
+  font-weight: 500;
+}
+.tcard .size-pill::before {
+  content: '·';
+  margin: 0 7px;
+  color: var(--muted);
+}
+.tcard .start-here {
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--accent);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+/* Profile box header: picture, name, total XP */
+.profile-hero {
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+.profile-xp {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 2px;
+  font-weight: 700;
+  color: var(--reward);
+}
+.profile-xp .chip-star svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Theme / Settings header: back arrow, then title */
+.sheet-head.back-head {
+  justify-content: flex-start;
+  gap: 4px;
+  padding-left: 12px;
+}
+
+/* Badge list: icon · name + how to earn · status */
+.badge-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  overflow: hidden;
+  text-align: left;
+}
+.badge-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+}
+.badge-row + .badge-row {
+  border-top: 1px solid var(--line);
+}
+.badge-row-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+.badge-row-icon svg {
+  width: 22px;
+  height: 22px;
+}
+.badge-row.earned .badge-row-icon {
+  background: var(--reward-soft);
+  color: var(--reward);
+}
+.badge-row.locked .badge-row-icon {
+  background: var(--subtle);
+  color: #9ca3af;
+}
+.badge-row-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.badge-row-text strong {
+  font-weight: 600;
+}
+.badge-row.locked .badge-row-text strong {
+  color: var(--muted);
+}
+.badge-row-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.badge-row.earned .badge-row-status {
+  color: var(--good);
+}
+.badge-row.locked .badge-row-status {
+  color: #9ca3af;
+}
+.badge-row-status svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Top bar follows the theme, in deep, calm shades (bottom bar stays white) */
+.app.theme-acoustic .topbar {
+  background: #6b3a1e;
+  border-bottom-color: #58301a;
+}
+.app.theme-electric .topbar {
+  background: #1f2330;
+  border-bottom-color: #161922;
+}
+.app.theme-headliner .topbar {
+  background: #4c1d95;
+  border-bottom-color: #3d1778;
+}
+
+/* Due dates and "Start here" stay calm blue in every theme (never red) */
+.app .tcard .due-tag,
+.app .tcard .start-here {
+  color: #2f5fd0;
+}
+@media (prefers-color-scheme: dark) {
+  .app .tcard .due-tag,
+  .app .tcard .start-here {
+    color: #8fb0ff;
+  }
+}
+
+/* Bottom bar icons take the theme color: soft when inactive, full when active */
+.bottom-nav button svg {
+  color: color-mix(in srgb, var(--accent) 55%, #9ca3af);
+}
+.bottom-nav button.on svg {
+  color: var(--accent);
+}
+.bottom-nav button.on {
+  background: var(--accent-soft);
 }

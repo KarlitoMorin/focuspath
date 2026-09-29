@@ -117,10 +117,10 @@ TASKS.push(
 )
 
 export const BADGES = [
-  { id: 'first-riff', name: 'First Riff', how: 'Finish your first task' },
-  { id: 'comeback', name: 'Comeback', how: 'Return to a task after a break and finish it' },
-  { id: 'encore', name: 'Encore', how: 'Finish 2 tasks' },
-  { id: 'full-setlist', name: 'Full Setlist', how: 'Finish all 5 tasks' },
+  { id: 'first-riff', icon: 'note', name: 'First Riff', how: 'Finish your first task' },
+  { id: 'comeback', icon: 'comeback', name: 'Comeback', how: 'Return to a task after a break and finish it' },
+  { id: 'encore', icon: 'sparkle', name: 'Encore', how: 'Finish 2 tasks' },
+  { id: 'full-setlist', icon: 'trophy', name: 'Full Setlist', how: 'Finish all 5 tasks' },
 ]
 
 // Due-Date Guidance: calm labels, relative to today ("Due today", "Due tomorrow", or the weekday).
@@ -169,16 +169,6 @@ export function labels(theme) {
     complete: guitar ? 'Set complete!' : 'Quest complete!',
     level: (lvl) =>
       guitar ? `Skill level: ${SKILL_LEVELS[Math.min(lvl, SKILL_LEVELS.length) - 1]}` : `Focus level ${lvl}`,
-    finished: guitar ? 'Finished sets' : 'Finished tasks',
-    trophy: guitar ? '🎸' : '🏆',
     working: guitar ? 'Now playing:' : "You're working on:",
   }
 }
-
-// Sample pop-up ads shown only with Focus Mode off (made-up products).
-// Two are aimed at Lucas's interests, which is what makes ads so distracting for him.
-export const ADS = [
-  { name: 'SnapQuiz Pro', text: 'Finish homework 2x faster! Tap to learn more.', colors: ['#ff5f6d', '#ffc371'] },
-  { name: 'BlockBuild Legends', text: 'New season is live! Play free now.', colors: ['#7f5af0', '#2cb1ff'] },
-  { name: 'RiffMaster Guitar', text: 'Learn any song in 5 minutes. 50% off today!', colors: ['#11998e', '#38ef7d'] },
-]
