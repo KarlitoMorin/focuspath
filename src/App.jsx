@@ -59,6 +59,9 @@ const Icon = {
   logout: (
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4" /><path d="M10 16l-4-4 4-4M6 12h10" /></svg>
   ),
+  back: (
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
+  ),
   chevron: (
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
   ),
@@ -476,6 +479,35 @@ export default function App() {
     )
   }
 
+  const shortDate = (iso) => new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+
+  function WorkSummary(t) {
+    const p = state.progress[t.id] || {}
+    const stepsDone = p.done ? t.steps.length : p.step || 0
+    return (
+      <li key={t.id} className={`tcard summary c-${t.color}`}>
+        <span className="tcard-body">
+          <span className="tcard-name">
+            <span className="sr-only">{t.subject}: </span>
+            {t.title}
+          </span>
+          <span className="summary-line">
+            {p.done ? (
+              <>
+                Finished {shortDate(p.doneAt)} · {t.steps.length} {L.step.toLowerCase()}s
+                {settings.rewards && <> · +{p.xpEarned} XP</>}
+              </>
+            ) : (
+              <>
+                Was {dueLabel(t.dueIn).toLowerCase()} · {stepsDone} of {t.steps.length} {L.step.toLowerCase()}s done
+              </>
+            )}
+          </span>
+        </span>
+      </li>
+    )
+  }
+
   function TaskList() {
     const missed = openTasks.filter((t) => t.dueIn < 0)
     const todo = openTasks.filter((t) => t.dueIn >= 0)
@@ -548,26 +580,20 @@ export default function App() {
           (missed.length === 0 ? (
             <p className="muted">No missed tasks.</p>
           ) : (
-            <ul className="tasks">{missed.map((t) => TaskCard(t, -1))}</ul>
+            <ul className="tasks">{missed.map((t) => WorkSummary(t))}</ul>
           ))}
 
         {filter === 'done' &&
           (doneTasks.length === 0 ? (
             <p className="muted">Finished tasks show up here.</p>
           ) : (
-            <ul className="tasks">
-              {doneTasks.map((t) => (
-                <li key={t.id}>
-                  <button className={`tcard c-${t.color} finished`} onClick={() => go('achievements')}>
-                    <span className="tcard-body">
-                      <span className="tcard-name">{t.title}</span>
-                    </span>
-                    <span className="trophy-xp">+{state.progress[t.id].xpEarned} XP</span>
-                    <span className="tcard-go">{Icon.chevron}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
+            <>
+              <p className="muted small">
+                {doneTasks.length} finished
+                {settings.rewards && <> · {doneTasks.reduce((sum, t) => sum + (state.progress[t.id].xpEarned || 0), 0)} XP earned</>}
+              </p>
+              <ul className="tasks">{doneTasks.map((t) => WorkSummary(t))}</ul>
+            </>
           ))}
       </section>
     )
@@ -653,8 +679,8 @@ export default function App() {
             <button className="btn primary big" onClick={nextStep} disabled={!allDone}>
               {allDone
                 ? isLast
-                  ? 'Check & submit →'
-                  : `Next ${L.step.toLowerCase()} →`
+                  ? 'Check & submit'
+                  : `Next ${L.step.toLowerCase()}`
                 : `${isLast ? 'Check & submit' : `Next ${L.step.toLowerCase()}`} · ${left} left`}
             </button>
             <div className={prog.step === 0 ? 'secondary single' : 'secondary'}>
@@ -663,7 +689,7 @@ export default function App() {
               </button>
               {prog.step > 0 && (
                 <button className="btn" onClick={prevStep}>
-                  ← Back
+                  Back
                 </button>
               )}
             </div>
@@ -768,10 +794,10 @@ export default function App() {
           <div className="actions">
             <div className="pair">
               <button className="btn big" onClick={() => go('tasks')}>
-                ← Back to tasks
+                Back to tasks
               </button>
               <button className="btn primary big" onClick={continueTask}>
-                Continue →
+                Continue
               </button>
             </div>
           </div>
@@ -807,7 +833,7 @@ export default function App() {
                 Pause &amp; Save
               </button>
               <button className="btn" onClick={backFromReview}>
-                ← Back
+                Back
               </button>
             </div>
           </div>
@@ -895,11 +921,11 @@ export default function App() {
   function AchievementsScreen() {
     return (
       <section className="page">
-        <div className="list-head">
-          <h1>Achievements</h1>
-          <button className="btn" onClick={() => go('tasks')}>
-            ← Tasks
+        <div className="page-head">
+          <button className="icon-btn back-btn" onClick={() => go('tasks')} aria-label="Back to tasks">
+            {Icon.back}
           </button>
+          <h1 className="list-title">Achievements</h1>
         </div>
         <h2 className="section-title">
           {L.finished} {L.trophy}

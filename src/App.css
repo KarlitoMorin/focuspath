@@ -1896,3 +1896,30 @@ small {
   margin: 0;
   align-self: center;
 }
+
+/* Page header with a back arrow (Achievements) */
+.page-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: -10px;
+}
+.back-btn {
+  color: var(--text);
+}
+.back-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* Missed / Done: summary cards (not links) */
+.tcard.summary {
+  cursor: default;
+}
+.tcard.summary:hover {
+  background: var(--surface);
+}
+.summary-line {
+  font-size: 0.88rem;
+  color: var(--muted);
+}
