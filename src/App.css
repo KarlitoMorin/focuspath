@@ -197,42 +197,17 @@ small {
   color: var(--accent);
 }
 
-/* ---------- Focus Mode OFF: regular portal (menus, feed, sidebar) ---------- */
+/* ---------- Focus Mode OFF: regular portal (menus and feed) ---------- */
 
 .main.portal {
-  max-width: 1240px;
+  max-width: 1000px;
   display: grid;
-  grid-template-columns: 190px minmax(0, 1fr) 280px;
+  grid-template-columns: minmax(0, 1fr) 280px;
   gap: 24px;
   align-items: start;
 }
 .center {
   min-width: 0;
-}
-.side {
-  position: sticky;
-  top: 88px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.side button {
-  min-height: 44px;
-  padding: 0 14px;
-  border: 0;
-  border-radius: 10px;
-  background: none;
-  text-align: left;
-  font-weight: 500;
-  color: var(--muted);
-}
-.side button:hover {
-  background: var(--subtle);
-  color: var(--text);
-}
-.side button.on {
-  background: var(--accent-soft);
-  color: var(--accent);
 }
 .feed {
   position: sticky;
@@ -276,17 +251,6 @@ small {
   .main.portal {
     grid-template-columns: minmax(0, 1fr);
     gap: 16px;
-  }
-  .side {
-    position: static;
-    flex-direction: row;
-    overflow-x: auto;
-    padding-bottom: 4px;
-  }
-  .side button {
-    flex-shrink: 0;
-    border: 1px solid var(--line);
-    border-radius: 999px;
   }
   .feed {
     position: static;

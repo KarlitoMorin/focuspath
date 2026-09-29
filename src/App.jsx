@@ -265,7 +265,7 @@ export default function App() {
 
   const setFocus = (on) => {
     setSetting('focusMode', on)
-    setToast(on ? 'Focus Mode on: menus, feed and sidebar hidden.' : 'Focus Mode off: full portal view.')
+    setToast(on ? 'Focus Mode on: menus and feed hidden.' : 'Focus Mode off: full portal view.')
   }
 
   const resetSprint = (min = settings.sprintMin, running = true) =>
@@ -985,22 +985,7 @@ export default function App() {
   }
 
   const openMenu = (item) => {
-    if (item === 'Home' || item === 'Tasks') go('tasks')
-    else if (item === 'Achievements') go('achievements')
-    else setToast(`${item} is part of the full learning platform.`)
-  }
-
-  function Sidebar() {
-    const current = screen === 'achievements' ? 'Achievements' : 'Tasks'
-    return (
-      <aside className="side" aria-label="Portal menu">
-        {PORTAL.menu.map((item) => (
-          <button key={item} className={item === current ? 'on' : ''} onClick={() => openMenu(item)}>
-            {item}
-          </button>
-        ))}
-      </aside>
-    )
+    setToast(`${item} is part of the full learning platform.`)
   }
 
   function Feed() {
@@ -1101,7 +1086,6 @@ export default function App() {
       </header>
 
       <main className={settings.focusMode ? 'main' : 'main portal'}>
-        {!settings.focusMode && Sidebar()}
         <div className="center">
         {inTask && GoalAnchor()}
         <nav className="here" aria-label="You are here">

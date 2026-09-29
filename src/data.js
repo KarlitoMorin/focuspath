@@ -127,9 +127,8 @@ export function labels(theme) {
   }
 }
 
-// The regular learning-portal clutter that Focus Mode hides (menus, feed, sidebar).
+// The regular learning-portal clutter that Focus Mode hides (menus and feed).
 export const PORTAL = {
-  menu: ['Home', 'Tasks', 'Achievements', 'Classes', 'Calendar', 'Grades', 'Messages', 'Files'],
   feed: [
     { from: 'English', text: 'Essay rubric uploaded. Check it before you start.', when: '2h' },
     { from: 'Math', text: 'Practice set answers will be posted on Friday.', when: '5h' },
