@@ -2100,3 +2100,18 @@ small {
 .focus-intro .pair {
   width: 100%;
 }
+
+/* Missed tab: calm, supportive note (never red) */
+.support-note {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: var(--accent-soft);
+  font-size: 0.92rem;
+}
+.support-note strong {
+  font-weight: 600;
+  color: var(--accent);
+}

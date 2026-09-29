@@ -484,6 +484,24 @@ export default function App() {
 
   const shortDate = (iso) => new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
 
+  // Missed work can't be edited; it shows how far he got, without blame.
+  function MissedSummary(t) {
+    const p = state.progress[t.id] || {}
+    return (
+      <li key={t.id} className={`tcard summary c-${t.color}`}>
+        <span className="tcard-body">
+          <span className="tcard-name">
+            <span className="sr-only">{t.subject}: </span>
+            {t.title}
+          </span>
+          <span className="summary-line">
+            {dueLabel(t.dueIn)} · {p.step || 0} of {t.steps.length} {L.step.toLowerCase()}s done
+          </span>
+        </span>
+      </li>
+    )
+  }
+
   function WorkSummary(t) {
     const p = state.progress[t.id] || {}
     return (
@@ -514,8 +532,8 @@ export default function App() {
     ]
 
     if (settings.focusMode) {
-      const inProgress = openTasks.filter((t) => isInProgress(state.progress[t.id]))
-      const next = inProgress.find((t) => t.id === state.lastTaskId) || inProgress[0] || todo[0] || missed[0]
+      const inProgress = todo.filter((t) => isInProgress(state.progress[t.id]))
+      const next = inProgress.find((t) => t.id === state.lastTaskId) || inProgress[0] || todo[0]
       return (
         <section className="page">
           <div className="list-head">
@@ -574,7 +592,13 @@ export default function App() {
           (missed.length === 0 ? (
             <p className="muted">No missed tasks.</p>
           ) : (
-            <ul className="tasks">{missed.map((t) => TaskCard(t, -1))}</ul>
+            <>
+              <div className="support-note" role="note">
+                <strong>It's okay to miss one.</strong>
+                <span>Ask your teacher for a new due date. Your progress so far is saved.</span>
+              </div>
+              <ul className="tasks">{missed.map((t) => MissedSummary(t))}</ul>
+            </>
           ))}
 
         {filter === 'done' &&
