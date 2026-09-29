@@ -967,11 +967,11 @@ small {
   --fret-lit: rgba(245, 180, 90, 0.55);
 }
 .theme-electric {
-  --accent: #dc2626;
-  --accent-soft: #fdecec;
-  --neck: #1d1d23;
+  --accent: #111111;
+  --accent-soft: #eceef1;
+  --neck: #111111;
   --string: rgba(220, 220, 230, 0.45);
-  --fret-lit: rgba(239, 68, 68, 0.55);
+  --fret-lit: rgba(203, 213, 225, 0.55);
 }
 .theme-headliner {
   --accent: #7c3aed;
@@ -986,8 +986,9 @@ small {
     --accent-soft: #33240f;
   }
   .theme-electric {
-    --accent: #f87171;
-    --accent-soft: #3a1717;
+    --accent: #e5e7eb;
+    --accent-ink: #111111;
+    --accent-soft: #26282e;
   }
   .theme-headliner {
     --accent: #b794f6;
@@ -1064,8 +1065,8 @@ small {
   background:
     repeating-linear-gradient(90deg, transparent 0 22%, #9a9aa5 22% 25%),
     repeating-linear-gradient(to bottom, transparent 0 4px, rgba(220, 220, 230, 0.45) 4px 5px),
-    #1d1d23;
-  box-shadow: inset 4px 0 0 #dc2626;
+    #111111;
+  box-shadow: inset 4px 0 0 #cbd5e1;
 }
 .swatch-headliner {
   background:
@@ -2703,8 +2704,8 @@ small {
   border-bottom-color: #58301a;
 }
 .app.theme-electric .topbar {
-  background: #1f2330;
-  border-bottom-color: #161922;
+  background: #111111;
+  border-bottom-color: #000;
 }
 .app.theme-headliner .topbar {
   background: #4c1d95;
@@ -2777,7 +2778,7 @@ small {
   --bar: #6b3a1e;
 }
 .app.theme-electric {
-  --bar: #1f2330;
+  --bar: #111111;
 }
 .app.theme-headliner {
   --bar: #4c1d95;
@@ -2788,4 +2789,36 @@ small {
 .focus-btn.on .fb-state {
   background: var(--bar);
   color: #fff;
+}
+
+/* Status tabs: plain gray; only the selected tab takes the theme color */
+.app .status-tab,
+.app .status-tab.tab-todo,
+.app .status-tab.tab-missed,
+.app .status-tab.tab-done {
+  --c: var(--muted);
+  --c-soft: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+.app .status-tab .status-label {
+  color: var(--text);
+  font-weight: 500;
+}
+.app .status-tab .status-count {
+  background: var(--subtle);
+  color: var(--muted);
+}
+.app .status-tab.on {
+  --c: var(--accent);
+  --c-soft: var(--accent-soft);
+  border-color: var(--accent);
+}
+.app .status-tab.on .status-label {
+  color: var(--accent);
+  font-weight: 700;
+}
+.app .status-tab.on .status-count {
+  background: var(--accent);
+  color: var(--accent-ink);
 }

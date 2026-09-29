@@ -318,7 +318,7 @@ export default function App() {
 
   // Phone browser bar matches the themed top bar.
   useEffect(() => {
-    const colors = { classic: '#15803d', acoustic: '#6b3a1e', electric: '#1f2330', headliner: '#4c1d95' }
+    const colors = { classic: '#15803d', acoustic: '#6b3a1e', electric: '#111111', headliner: '#4c1d95' }
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', colors[state.settings.theme] || colors.classic)
   }, [state.settings.theme])
 
