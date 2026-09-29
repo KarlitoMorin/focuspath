@@ -2733,3 +2733,59 @@ small {
 .bottom-nav button.on {
   background: var(--accent-soft);
 }
+
+/* Step title and XP on one line */
+.step-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.step-head .step-title {
+  flex: 1;
+  min-width: 0;
+}
+.step-head .xp {
+  flex-shrink: 0;
+  margin-top: 0.45em;
+  white-space: nowrap;
+}
+
+/* Goal Anchor: step number next to the progress strip */
+.anchor-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.anchor-progress > :first-child {
+  flex: 1;
+  min-width: 0;
+}
+.anchor-step {
+  flex-shrink: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+/* Focus button ON color follows the theme's top-bar shade */
+.app {
+  --bar: #15803d;
+}
+.app.theme-acoustic {
+  --bar: #6b3a1e;
+}
+.app.theme-electric {
+  --bar: #1f2330;
+}
+.app.theme-headliner {
+  --bar: #4c1d95;
+}
+.focus-btn.on .fb-dot {
+  background: var(--bar);
+}
+.focus-btn.on .fb-state {
+  background: var(--bar);
+  color: #fff;
+}

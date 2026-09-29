@@ -678,6 +678,9 @@ export default function App() {
             theme={settings.theme}
             label={`${doneSteps} of ${task.steps.length} ${L.step.toLowerCase()}s done`}
           />
+          <span className="anchor-step">
+            {prog.reviewing ? 'Final check' : `${L.step} ${prog.step + 1} of ${task.steps.length}`}
+          </span>
         </div>
       </div>
     )
@@ -742,14 +745,14 @@ export default function App() {
         )}
 
         <article className="card step-card">
-          {settings.rewards && (
-            <div className="step-top">
+          <div className="step-head">
+            <h1 className="step-title">{step.title}</h1>
+            {settings.rewards && (
               <span className="xp">
                 <span className="chip-star">{Icon.star}</span> {state.xp} XP
               </span>
-            </div>
-          )}
-          <h1 className="step-title">{step.title}</h1>
+            )}
+          </div>
 
           {step.video && VideoTile(step.video)}
 
