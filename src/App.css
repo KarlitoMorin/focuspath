@@ -50,46 +50,8 @@ small {
 }
 
 
-.focus-wrap,
-.bell-wrap {
+.focus-wrap {
   position: relative;
-}
-.bell-wrap .icon-btn {
-  color: var(--text);
-}
-.bell-wrap .count {
-  position: absolute;
-  top: 2px;
-  right: 2px;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 5px;
-  border-radius: 9px;
-  background: var(--danger);
-  color: #fff;
-  font-size: 0.7rem;
-  font-weight: 700;
-  line-height: 18px;
-}
-.bell-menu {
-  right: 0;
-  left: auto;
-  width: 260px;
-  padding: 14px;
-}
-.bell-menu ul {
-  list-style: none;
-  margin: 8px 0 0;
-  padding: 0;
-}
-.bell-menu li {
-  padding: 8px 0;
-  border-top: 1px solid var(--line);
-  font-size: 0.88rem;
-}
-.update-from {
-  font-weight: 600;
-  color: var(--accent);
 }
 
 .focus-card {
@@ -540,11 +502,6 @@ small {
 }
 .secondary.single {
   grid-template-columns: 1fr;
-}
-.demo-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
 }
 .stack {
   display: flex;
@@ -1238,6 +1195,10 @@ small {
 .sheet-body > .setting:first-child {
   border-top: 0;
 }
+.sheet-foot {
+  padding: 12px 24px calc(16px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line);
+}
 .setting {
   display: flex;
   align-items: center;
@@ -1419,11 +1380,10 @@ small {
     padding: 12px 16px 12px 20px;
   }
   .sheet-body {
-    padding: 0 20px calc(20px + env(safe-area-inset-bottom));
+    padding: 0 20px 16px;
   }
-  .demo-grid .btn {
-    padding: 0 10px;
-    font-size: 0.9rem;
+  .sheet-foot {
+    padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
   }
 }
 
@@ -1901,7 +1861,6 @@ small {
     transform: none;
   }
   .focus-card,
-  .bell-menu,
   .profile-menu {
     position: fixed;
     top: 62px;

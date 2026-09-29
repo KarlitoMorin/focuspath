@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { BADGES, CLASS_UPDATES, SIZES, dueLabel, STEP_XP, TASKS, THEMES, XP_PER_LEVEL, isUnlocked, labels, levelInfo, themesUnlockedBetween } from './data.js'
+import { BADGES, SIZES, dueLabel, STEP_XP, TASKS, THEMES, XP_PER_LEVEL, isUnlocked, labels, levelInfo, themesUnlockedBetween } from './data.js'
 import './App.css'
 
 const STORAGE_KEY = 'focuspath-prototype-v1'
@@ -44,6 +44,9 @@ const Icon = {
   user: (
     <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></svg>
   ),
+  palette: (
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 0 0 0 18c1.1 0 1.6-.8 1.6-1.6 0-.9-.7-1.4-.7-2.2 0-.9.7-1.6 1.6-1.6H17a4 4 0 0 0 4-4c0-4.7-4-8.6-9-8.6z" /><circle cx="7.5" cy="11" r="1" /><circle cx="10" cy="7" r="1" /><circle cx="15" cy="7.5" r="1" /></svg>
+  ),
   trophy: (
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0z" /><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 21h8M9 17h6" /></svg>
   ),
@@ -85,9 +88,6 @@ const Icon = {
   ),
   eyeOff: (
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18" /><path d="M10.6 5.1A10.8 10.8 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.1M6.6 6.6C3.9 8.4 2 12 2 12s3.6 7 10 7a10 10 0 0 0 5.4-1.6" /><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" /></svg>
-  ),
-  bell: (
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" /><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0" /></svg>
   ),
   x: (
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17" /></svg>
@@ -214,9 +214,9 @@ export default function App() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [filter, setFilter] = useState('todo')
   const [focusCardOpen, setFocusCardOpen] = useState(false)
-  const [bellOpen, setBellOpen] = useState(false)
-  const [updatesSeen, setUpdatesSeen] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [themeOpen, setThemeOpen] = useState(false)
+  const [draft, setDraft] = useState(null)
   const [toast, setToast] = useState(null)
   const [cleared, setCleared] = useState(null)
   const [savedAt, setSavedAt] = useState(false)
@@ -252,12 +252,11 @@ export default function App() {
   }, [sprint.running])
 
   useEffect(() => {
-    if (!menuOpen && !focusCardOpen && !bellOpen) return
+    if (!menuOpen && !focusCardOpen) return
     const close = (e) => {
-      if (e.type === 'keydown' ? e.key !== 'Escape' : e.target.closest('.menu-wrap, .focus-wrap, .bell-wrap')) return
+      if (e.type === 'keydown' ? e.key !== 'Escape' : e.target.closest('.menu-wrap, .focus-wrap')) return
       setMenuOpen(false)
       setFocusCardOpen(false)
-      setBellOpen(false)
     }
     document.addEventListener('pointerdown', close)
     document.addEventListener('keydown', close)
@@ -265,7 +264,7 @@ export default function App() {
       document.removeEventListener('pointerdown', close)
       document.removeEventListener('keydown', close)
     }
-  }, [menuOpen, focusCardOpen, bellOpen])
+  }, [menuOpen, focusCardOpen])
 
   // The Focus Mode status card hides itself after a few seconds.
   useEffect(() => {
@@ -274,26 +273,20 @@ export default function App() {
     return () => clearTimeout(id)
   }, [focusCardOpen, state.settings.focusMode])
 
-  // With Focus Mode off, class updates interrupt like a normal portal would.
   useEffect(() => {
-    if (state.settings.focusMode) return
-    const id = setTimeout(() => {
-      const u = CLASS_UPDATES[0]
-      setToast(`🔔 ${u.from}: ${u.text}`)
-    }, 6000)
-    return () => clearTimeout(id)
-  }, [state.settings.focusMode])
-
-  useEffect(() => {
-    if (!settingsOpen) return
-    const onKey = (e) => e.key === 'Escape' && setSettingsOpen(false)
+    if (!settingsOpen && !themeOpen) return
+    const onKey = (e) => {
+      if (e.key !== 'Escape') return
+      setSettingsOpen(false)
+      setThemeOpen(false)
+    }
     document.body.style.overflow = 'hidden'
     window.addEventListener('keydown', onKey)
     return () => {
       document.body.style.overflow = ''
       window.removeEventListener('keydown', onKey)
     }
-  }, [settingsOpen])
+  }, [settingsOpen, themeOpen])
 
   useEffect(() => {
     if (!toast) return
@@ -311,12 +304,10 @@ export default function App() {
       return s
     })
 
-  // Focus Mode on = autoplay blocked, notifications held, motion off. One tap, no settings.
+  // Focus Mode on = one task at a time, autoplay blocked, motion off. One tap, no settings.
   const setFocus = (on) => {
     setSetting('focusMode', on)
-    setBellOpen(false)
     setFocusCardOpen(true)
-    if (on) setUpdatesSeen(false)
   }
 
   const resetSprint = (min = settings.sprintMin, running = true) =>
@@ -449,50 +440,6 @@ export default function App() {
     setLastEarned({ steps: task.steps.length, bonus, earned, size: task.size })
     setCleared(null)
     go('complete')
-  }
-
-  const resetAll = () => {
-    setState(structuredClone(DEFAULT_STATE))
-    setSettingsOpen(false)
-    setTaskId(null)
-    setSprint({ remaining: DEFAULT_STATE.settings.sprintMin * 60, running: false, over: false })
-    setToast('Prototype reset.')
-    go('tasks')
-  }
-
-  // Demo shortcuts (Focus settings): jump straight to a state for the presentation.
-  const loadDemo = (kind) => {
-    const essay = TASKS[0]
-    const done = (i) => essay.steps[i].items.map(() => true)
-    const next = structuredClone(kind === 'xp' ? state : DEFAULT_STATE)
-    next.settings = { ...state.settings }
-    let target = 'step'
-    if (kind === 'xp') {
-      const unlocked = themesUnlockedBetween(state.xp, state.xp + 100)
-      next.xp += 100
-      setState(next)
-      setSettingsOpen(false)
-      setToast(unlocked.length ? `+100 XP. 🎸 ${unlocked[0].name} theme unlocked!` : '+100 XP added.')
-      return
-    }
-    if (kind === 'step2' || kind === 'resume') {
-      next.progress.essay = { ...blankProgress(), started: true, step: 1, best: 1, paused: kind === 'resume', checks: { 0: done(0), 1: [true, false, false] } }
-      next.xp = STEP_XP
-      if (kind === 'resume') target = 'resume'
-    }
-    if (kind === 'submit') {
-      next.progress.essay = { ...blankProgress(), started: true, step: 3, best: 4, reviewing: true, checks: Object.fromEntries(essay.steps.map((_, i) => [i, done(i)])) }
-      next.xp = STEP_XP * 4
-      target = 'review'
-    }
-    next.lastTaskId = essay.id
-    setState(next)
-    setSavedAt(true)
-    setTaskId(essay.id)
-    setCleared(null)
-    setSettingsOpen(false)
-    resetSprint(settings.sprintMin, target === 'step')
-    go(target)
   }
 
   /* ----- Screens ----- */
@@ -995,90 +942,96 @@ export default function App() {
     )
   }
 
-  function SettingsPanel() {
+  const openSettings = () => {
+    setMenuOpen(false)
+    setDraft({ ...settings })
+    setSettingsOpen(true)
+  }
+  const openTheme = () => {
+    setMenuOpen(false)
+    setDraft({ theme: settings.theme })
+    setThemeOpen(true)
+  }
+  const closeSheets = () => {
+    setSettingsOpen(false)
+    setThemeOpen(false)
+  }
+  const saveDraft = () => {
+    update((s) => {
+      s.settings = { ...s.settings, ...draft }
+      return s
+    })
+    if (draft.sprintMin && draft.sprintMin !== settings.sprintMin) resetSprint(draft.sprintMin, sprint.running)
+    closeSheets()
+    setToast(themeOpen ? 'Theme saved.' : 'Settings saved.')
+  }
+  const setDraftValue = (key, value) => setDraft((d) => ({ ...d, [key]: value }))
+
+  function Sheet(title, body) {
     return (
-      <div className="overlay" onClick={(e) => e.target === e.currentTarget && setSettingsOpen(false)}>
-        <div className="card sheet" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+      <div className="overlay" onClick={(e) => e.target === e.currentTarget && closeSheets()}>
+        <div className="card sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
           <div className="sheet-head">
-            <h2 id="settings-title">Focus settings</h2>
-            <button className="btn" onClick={() => setSettingsOpen(false)}>
-              Done
+            <h2 id="sheet-title">{title}</h2>
+            <button className="icon-btn" onClick={closeSheets} aria-label="Close">
+              {Icon.x}
             </button>
           </div>
-          <div className="sheet-body">
-
-          <label className="setting">
-            <span>
-              <strong>Animations</strong>
-              <small>Always off in Focus Mode.</small>
-            </span>
-            <input type="checkbox" className="switch" checked={settings.motion} onChange={(e) => setSetting('motion', e.target.checked)} />
-          </label>
-
-          <label className="setting">
-            <span>
-              <strong>Game-style rewards</strong>
-            </span>
-            <input type="checkbox" className="switch" checked={settings.rewards} onChange={(e) => setSetting('rewards', e.target.checked)} />
-          </label>
-
-          <div className="setting col">
-            <span>
-              <strong>Theme</strong>
-              <small>Earn XP to unlock guitar themes.</small>
-            </span>
-            <ThemePicker xp={state.xp} current={settings.theme} onPick={(id) => setSetting('theme', id)} />
-          </div>
-
-          <div className="setting col">
-            <span>
-              <strong>Sprint length</strong>
-            </span>
-            <div className="segmented" role="radiogroup" aria-label="Sprint length">
-              {[10, 15, 25].map((m) => (
-                <button
-                  key={m}
-                  role="radio"
-                  aria-checked={settings.sprintMin === m}
-                  className={settings.sprintMin === m ? 'on' : ''}
-                  onClick={() => {
-                    setSetting('sprintMin', m)
-                    resetSprint(m, sprint.running)
-                  }}
-                >
-                  {m} min
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="setting col">
-            <span>
-              <strong>Demo</strong>
-              <small>Jump to a screen for the presentation.</small>
-            </span>
-            <div className="demo-grid">
-              <button className="btn" onClick={() => loadDemo('step2')}>
-                Essay, Step 2
-              </button>
-              <button className="btn" onClick={() => loadDemo('resume')}>
-                Welcome back
-              </button>
-              <button className="btn" onClick={() => loadDemo('submit')}>
-                Ready to submit
-              </button>
-              <button className="btn" onClick={() => loadDemo('xp')}>
-                +100 XP
-              </button>
-            </div>
-          </div>
-
-          <button className="btn danger" onClick={resetAll}>
-            Reset prototype
-          </button>
+          <div className="sheet-body">{body}</div>
+          <div className="sheet-foot">
+            <button className="btn primary big" onClick={saveDraft}>
+              Save
+            </button>
           </div>
         </div>
       </div>
+    )
+  }
+
+  function SettingsPanel() {
+    return Sheet(
+      'Settings',
+      <>
+        <label className="setting">
+          <span>
+            <strong>Animations</strong>
+            <small>Always off in Focus Mode.</small>
+          </span>
+          <input type="checkbox" className="switch" checked={draft.motion} onChange={(e) => setDraftValue('motion', e.target.checked)} />
+        </label>
+
+        <label className="setting">
+          <span>
+            <strong>Game-style rewards</strong>
+          </span>
+          <input type="checkbox" className="switch" checked={draft.rewards} onChange={(e) => setDraftValue('rewards', e.target.checked)} />
+        </label>
+
+        <div className="setting col">
+          <span>
+            <strong>Sprint length</strong>
+          </span>
+          <div className="segmented" role="radiogroup" aria-label="Sprint length">
+            {[10, 15, 25].map((m) => (
+              <button key={m} role="radio" aria-checked={draft.sprintMin === m} className={draft.sprintMin === m ? 'on' : ''} onClick={() => setDraftValue('sprintMin', m)}>
+                {m} min
+              </button>
+            ))}
+          </div>
+        </div>
+      </>,
+    )
+  }
+
+  function ThemePanel() {
+    return Sheet(
+      'Theme',
+      <div className="setting col">
+        <span>
+          <small>Earn XP to unlock guitar themes.</small>
+        </span>
+        <ThemePicker xp={state.xp} current={draft.theme} onPick={(id) => setDraftValue('theme', id)} />
+      </div>,
     )
   }
 
@@ -1089,7 +1042,7 @@ export default function App() {
 
   function FocusCard() {
     const on = settings.focusMode
-    const items = ['Autoplay blocked', 'Notifications held', 'Motion off']
+    const items = ['One task at a time', 'Autoplay blocked', 'Motion off']
     return (
       <div id="focus-card" className="focus-card" role="status">
         <strong className="focus-card-title">Focus Mode {on ? 'on' : 'off'}</strong>
@@ -1101,7 +1054,6 @@ export default function App() {
             </li>
           ))}
         </ul>
-        {!on && <small>{CLASS_UPDATES.length} class updates were held while you focused.</small>}
       </div>
     )
   }
@@ -1124,34 +1076,6 @@ export default function App() {
           <span className="logo-text">FocusPath</span>
         </button>
         <div className="topbar-right">
-          {!settings.focusMode && (
-            <div className="bell-wrap">
-              <button
-                className="icon-btn"
-                onClick={() => {
-                  setBellOpen((o) => !o)
-                  setUpdatesSeen(true)
-                }}
-                aria-label={`Class updates (${CLASS_UPDATES.length})`}
-                aria-expanded={bellOpen}
-              >
-                {Icon.bell}
-                {!updatesSeen && <span className="count">{CLASS_UPDATES.length}</span>}
-              </button>
-              {bellOpen && (
-                <div className="menu bell-menu">
-                  <strong>Class updates</strong>
-                  <ul>
-                    {CLASS_UPDATES.map((u) => (
-                      <li key={u.text}>
-                        <span className="update-from">{u.from}</span> {u.text}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          )}
           <div className="focus-wrap">
             <button
               className={settings.focusMode ? 'focus-switch on' : 'focus-switch'}
@@ -1178,19 +1102,13 @@ export default function App() {
                   <strong>Lucas</strong>
                   <small>Student</small>
                 </div>
-                <button role="menuitem" onClick={() => openMenu('Profile')}>
-                  {Icon.user} Profile
-                </button>
                 <button role="menuitem" className={screen === 'achievements' ? 'on' : ''} onClick={() => go('achievements')}>
                   {Icon.trophy} Achievements
                 </button>
-                <button
-                  role="menuitem"
-                  onClick={() => {
-                    setMenuOpen(false)
-                    setSettingsOpen(true)
-                  }}
-                >
+                <button role="menuitem" onClick={openTheme}>
+                  {Icon.palette} Theme
+                </button>
+                <button role="menuitem" onClick={openSettings}>
                   {Icon.gear} Settings
                 </button>
                 <button role="menuitem" onClick={() => openMenu('Help')}>
@@ -1237,6 +1155,7 @@ export default function App() {
         </div>
       )}
       {settingsOpen && SettingsPanel()}
+      {themeOpen && ThemePanel()}
     </div>
   )
 }

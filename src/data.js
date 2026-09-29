@@ -166,10 +166,3 @@ export function labels(theme) {
     trophy: guitar ? '🎸' : '🏆',
   }
 }
-
-// Sample class updates, held while Focus Mode is on.
-export const CLASS_UPDATES = [
-  { from: 'English', text: 'Essay rubric uploaded.' },
-  { from: 'Math', text: 'Answers will be posted on Friday.' },
-  { from: 'School', text: 'Club sign-ups are open this week.' },
-]
