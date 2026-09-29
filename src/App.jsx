@@ -44,6 +44,12 @@ const Icon = {
   target: (
     <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1.5" fill="currentColor" /></svg>
   ),
+  menu: (
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+  ),
+  list: (
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11" /><path d="M4.5 6h.01M4.5 12h.01M4.5 18h.01" strokeWidth="3" /></svg>
+  ),
   gear: (
     <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" /></svg>
   ),
@@ -216,6 +222,19 @@ export default function App() {
     }, 1000)
     return () => clearInterval(id)
   }, [sprint.running])
+
+  useEffect(() => {
+    if (!menuOpen) return
+    const close = (e) => {
+      if (e.type === 'keydown' ? e.key === 'Escape' : !e.target.closest('.menu-wrap')) setMenuOpen(false)
+    }
+    document.addEventListener('pointerdown', close)
+    document.addEventListener('keydown', close)
+    return () => {
+      document.removeEventListener('pointerdown', close)
+      document.removeEventListener('keydown', close)
+    }
+  }, [menuOpen])
 
   useEffect(() => {
     if (!settingsOpen) return
@@ -1027,10 +1046,34 @@ export default function App() {
   return (
     <div className={`app theme-${settings.theme} ${settings.motion ? 'motion-on' : 'motion-off'}`}>
       <header className="topbar">
-        <button className="logo" onClick={() => go('tasks')} aria-label="FocusPath home">
-          <span className="logo-mark">{Icon.target}</span>
-          FocusPath
-        </button>
+        <div className="menu-wrap">
+          <button className="icon-btn" onClick={() => setMenuOpen((o) => !o)} aria-label="Menu" aria-expanded={menuOpen}>
+            {Icon.menu}
+          </button>
+          {menuOpen && (
+            <div className="menu" role="menu">
+              <button
+                role="menuitem"
+                className={screen === 'tasks' || inTask ? 'on' : ''}
+                onClick={() => (inTask ? pauseAndSave() : go('tasks'))}
+              >
+                {Icon.list} Active tasks <span className="menu-count">{openTasks.length}</span>
+              </button>
+              <button role="menuitem" className={screen === 'achievements' ? 'on' : ''} onClick={() => go('achievements')}>
+                {Icon.check} Done <span className="menu-count">{doneTasks.length}</span>
+              </button>
+              <button
+                role="menuitem"
+                onClick={() => {
+                  setMenuOpen(false)
+                  setSettingsOpen(true)
+                }}
+              >
+                {Icon.gear} Settings
+              </button>
+            </div>
+          )}
+        </div>
         {!settings.focusMode && (
           <nav className="topnav" aria-label="Main">
             <button className={screen === 'tasks' ? 'on' : ''} onClick={() => go('tasks')}>
@@ -1054,37 +1097,6 @@ export default function App() {
           >
             <span className="pill-dot" /> Focus Mode: {settings.focusMode ? 'ON' : 'OFF'}
           </button>
-          <div className="menu-wrap">
-            <button className="icon-btn" onClick={() => setMenuOpen((o) => !o)} aria-label="Menu" aria-expanded={menuOpen}>
-              {Icon.gear}
-            </button>
-            {menuOpen && (
-              <div className="menu" role="menu">
-                <button
-                  role="menuitem"
-                  onClick={() => {
-                    setMenuOpen(false)
-                    setSettingsOpen(true)
-                  }}
-                >
-                  Focus settings
-                </button>
-                <button role="menuitem" onClick={() => go('achievements')}>
-                  Achievements
-                </button>
-                <button
-                  role="menuitem"
-                  onClick={() => {
-                    setMenuOpen(false)
-                    if (inTask) pauseAndSave()
-                    setFocus(false)
-                  }}
-                >
-                  Exit focus
-                </button>
-              </div>
-            )}
-          </div>
         </div>
       </header>
 
