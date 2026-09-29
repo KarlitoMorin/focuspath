@@ -56,6 +56,9 @@ const Icon = {
   clock: (
     <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
   ),
+  x: (
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17" /></svg>
+  ),
   check: (
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
   ),
@@ -188,6 +191,7 @@ export default function App() {
   const [screen, setScreen] = useState(initialResume ? 'resume' : 'tasks')
   const [taskId, setTaskId] = useState(initialResume ? state.lastTaskId : null)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [focusCardOpen, setFocusCardOpen] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [toast, setToast] = useState(null)
   const [cleared, setCleared] = useState(null)
@@ -224,9 +228,11 @@ export default function App() {
   }, [sprint.running])
 
   useEffect(() => {
-    if (!menuOpen) return
+    if (!menuOpen && !focusCardOpen) return
     const close = (e) => {
-      if (e.type === 'keydown' ? e.key === 'Escape' : !e.target.closest('.menu-wrap')) setMenuOpen(false)
+      if (e.type === 'keydown' ? e.key !== 'Escape' : e.target.closest('.menu-wrap, .focus-wrap')) return
+      setMenuOpen(false)
+      setFocusCardOpen(false)
     }
     document.addEventListener('pointerdown', close)
     document.addEventListener('keydown', close)
@@ -234,7 +240,7 @@ export default function App() {
       document.removeEventListener('pointerdown', close)
       document.removeEventListener('keydown', close)
     }
-  }, [menuOpen])
+  }, [menuOpen, focusCardOpen])
 
   useEffect(() => {
     if (!settingsOpen) return
@@ -988,6 +994,46 @@ export default function App() {
     setToast(`${item} is part of the full learning platform.`)
   }
 
+  function FocusCard() {
+    const items = [
+      { label: 'One task at a time, menus hidden', on: settings.focusMode },
+      { label: 'Goal kept on screen', on: true },
+      { label: 'Distraction Shield (no ads or autoplay)', on: true },
+      { label: 'Reduce motion', on: !settings.motion },
+    ]
+    return (
+      <div id="focus-card" className="focus-card" role="dialog" aria-label="What Focus Mode is doing">
+        <strong className="focus-card-title">Focus Mode is {settings.focusMode ? 'on' : 'off'}</strong>
+        <ul>
+          {items.map((item) => (
+            <li key={item.label} className={item.on ? 'is-on' : 'is-off'}>
+              <span className="focus-mark">{item.on ? Icon.check : Icon.x}</span>
+              {item.label}
+            </li>
+          ))}
+        </ul>
+        <button
+          className="btn primary"
+          onClick={() => {
+            setFocusCardOpen(false)
+            setFocus(!settings.focusMode)
+          }}
+        >
+          {settings.focusMode ? 'Exit focus' : 'Turn on Focus Mode'}
+        </button>
+        <button
+          className="link-btn"
+          onClick={() => {
+            setFocusCardOpen(false)
+            setSettingsOpen(true)
+          }}
+        >
+          Change in Focus settings
+        </button>
+      </div>
+    )
+  }
+
   const screens = {
     tasks: TaskList,
     step: StepScreen,
@@ -1045,13 +1091,17 @@ export default function App() {
           </nav>
         )}
         <div className="topbar-right">
-          <button
-            className={settings.focusMode ? 'focus-pill on' : 'focus-pill'}
-            onClick={() => setFocus(!settings.focusMode)}
-            aria-pressed={settings.focusMode}
-          >
-            <span className="pill-dot" /> Focus Mode: {settings.focusMode ? 'ON' : 'OFF'}
-          </button>
+          <div className="focus-wrap">
+            <button
+              className={settings.focusMode ? 'focus-pill on' : 'focus-pill'}
+              onClick={() => setFocusCardOpen((o) => !o)}
+              aria-expanded={focusCardOpen}
+              aria-controls="focus-card"
+            >
+              <span className="pill-dot" /> Focus Mode: {settings.focusMode ? 'ON' : 'OFF'}
+            </button>
+            {focusCardOpen && FocusCard()}
+          </div>
         </div>
       </header>
 
