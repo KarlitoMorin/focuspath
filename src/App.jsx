@@ -535,15 +535,15 @@ export default function App() {
           <span className="tcard-icon">{Icon[t.icon]}</span>
           <span className="tcard-body">
             <span className="tcard-name">
-              {t.name}
+              <span className="sr-only">{t.subject}: </span>
+              {t.title}
               {i === 0 && <span className="start-here">Start here</span>}
             </span>
-            <span className="tcard-title">{t.title}</span>
             <span className="tcard-meta">
-              <span className="tcard-time">
-                {Icon.clock} {t.time}
-              </span>
               <span className="due-tag">{dueLabel(t.dueIn)}</span>
+              <span className={`size-pill pill-${t.size}`}>
+                {SIZES[t.size].label} · {t.time.replace(/^About /, '')}
+              </span>
             </span>
             {going && (
               <span className="saved-note">
@@ -551,7 +551,6 @@ export default function App() {
               </span>
             )}
           </span>
-          <span className={`size-pill pill-${t.size}`}>{SIZES[t.size].label}</span>
           <span className="tcard-go">{Icon.chevron}</span>
         </button>
       </li>
@@ -636,8 +635,7 @@ export default function App() {
                   <button className={`tcard c-${t.color} finished`} onClick={() => go('achievements')}>
                     <span className="tcard-icon">{Icon.checkCircle}</span>
                     <span className="tcard-body">
-                      <span className="tcard-name">{t.name}</span>
-                      <span className="tcard-title">{t.title}</span>
+                      <span className="tcard-name">{t.title}</span>
                     </span>
                     <span className="trophy-xp">+{state.progress[t.id].xpEarned} XP</span>
                     <span className="tcard-go">{Icon.chevron}</span>

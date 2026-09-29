@@ -1827,9 +1827,6 @@ small {
   font-size: 1.1rem;
   font-weight: 700;
 }
-.tcard-title {
-  color: var(--muted);
-}
 .tcard-meta {
   display: flex;
   flex-wrap: wrap;
@@ -1837,30 +1834,16 @@ small {
   gap: 8px 12px;
   margin-top: 4px;
 }
-.tcard-time {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.88rem;
-  color: var(--muted);
-}
-.tcard-time svg {
-  width: 17px;
-  height: 17px;
-}
 .tcard .saved-note {
   margin-top: 4px;
 }
 .size-pill {
-  align-self: flex-start;
-  padding: 5px 14px;
+  padding: 3px 10px;
   border-radius: 999px;
   background: var(--c-soft);
   color: var(--c);
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 .size-pill.pill-big {
   background: #fdeeee;
@@ -1917,19 +1900,10 @@ small {
     height: 26px;
   }
   .tcard {
-    position: relative;
-    align-items: flex-start;
     gap: 12px;
     padding: 16px 12px 16px 14px;
   }
-  .tcard .size-pill {
-    position: absolute;
-    top: 14px;
-    right: 12px;
-    padding: 4px 10px;
-  }
   .tcard-name {
-    padding-right: 64px;
     font-size: 1rem;
   }
   .tcard-icon {
@@ -1940,11 +1914,17 @@ small {
     width: 22px;
     height: 22px;
   }
-  .tcard-go {
-    display: none;
-  }
 }
 
 .here .chip {
   margin: 0 0 0 auto;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
