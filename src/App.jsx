@@ -65,21 +65,6 @@ const Icon = {
   checkCircle: (
     <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M8 12.5l2.7 2.7L16 10" /></svg>
   ),
-  doc: (
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6z" /><path d="M14 3v4h4M9 12h6M9 16h6" /></svg>
-  ),
-  calc: (
-    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2" /><path d="M8 7h8M8 12h2M12 12h2M16 12h.01M8 16h2M12 16h2M16 16h.01" /></svg>
-  ),
-  book: (
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h6a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H3zM21 5h-6a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h7z" /></svg>
-  ),
-  laptop: (
-    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="5" width="14" height="10" rx="1.5" /><path d="M2 19h20" /></svg>
-  ),
-  people: (
-    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3" /><path d="M6 20a6 6 0 0 1 12 0" /><circle cx="5" cy="10" r="2" /><circle cx="19" cy="10" r="2" /><path d="M2 18a3.5 3.5 0 0 1 4-3M22 18a3.5 3.5 0 0 0-4-3" /></svg>
-  ),
   target: (
     <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1.5" fill="currentColor" /></svg>
   ),
@@ -532,7 +517,6 @@ export default function App() {
     return (
       <li key={t.id}>
         <button className={`tcard c-${t.color}${i === 0 ? ' suggested' : ''}`} onClick={() => openTask(t.id)}>
-          <span className="tcard-icon">{Icon[t.icon]}</span>
           <span className="tcard-body">
             <span className="tcard-name">
               <span className="sr-only">{t.subject}: </span>
@@ -633,7 +617,6 @@ export default function App() {
               {doneTasks.map((t) => (
                 <li key={t.id}>
                   <button className={`tcard c-${t.color} finished`} onClick={() => go('achievements')}>
-                    <span className="tcard-icon">{Icon.checkCircle}</span>
                     <span className="tcard-body">
                       <span className="tcard-name">{t.title}</span>
                     </span>
@@ -1177,7 +1160,9 @@ export default function App() {
               aria-checked={settings.focusMode}
             >
               <span className="fs-dot" />
-              <span className="fs-label">Focus Mode</span>
+              <span className="fs-label">
+                Focus<span className="fs-long"> Mode</span>
+              </span>
               <span className="fs-state">{settings.focusMode ? 'ON' : 'OFF'}</span>
             </button>
             {focusCardOpen && FocusCard()}

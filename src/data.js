@@ -18,7 +18,6 @@ export const TASKS = [
     size: 'big',
     time: 'About 45+ min',
     color: 'blue',
-    icon: 'doc',
     dueIn: 1, // days from today
     steps: [
       {
@@ -47,7 +46,6 @@ export const TASKS = [
     size: 'quick',
     time: 'About 10 min',
     color: 'green',
-    icon: 'calc',
     dueIn: 0,
     steps: [
       {
@@ -68,7 +66,6 @@ export const TASKS = [
     size: 'medium',
     time: 'About 25 min',
     color: 'amber',
-    icon: 'book',
     dueIn: 3,
     steps: [
       {
@@ -96,7 +93,6 @@ TASKS.push(
     size: 'medium',
     time: 'About 35 min',
     color: 'purple',
-    icon: 'laptop',
     dueIn: 4,
     steps: [
       { title: 'Research your topic', items: ['Pick 2 sources', 'Note 3 key facts'] },
@@ -111,7 +107,6 @@ TASKS.push(
     size: 'quick',
     time: 'About 20 min',
     color: 'cyan',
-    icon: 'people',
     dueIn: 2,
     steps: [
       { title: 'Plan your reflection', items: ['Reread the story', 'Write down 2 things you felt'] },

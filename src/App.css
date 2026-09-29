@@ -1573,6 +1573,11 @@ small {
     transform: translate(-50%, 10px);
   }
 }
+@media (max-width: 640px) {
+  .motion-on .toast {
+    animation-name: fade-up;
+  }
+}
 
 /* ---------- Mockup layout: header, status tabs, task cards ---------- */
 
@@ -1798,20 +1803,6 @@ small {
   border-color: color-mix(in srgb, var(--c) 45%, var(--line));
   border-left-color: var(--c);
 }
-.tcard-icon {
-  display: grid;
-  place-items: center;
-  width: 56px;
-  height: 56px;
-  border-radius: 14px;
-  background: var(--c-soft);
-  color: var(--c);
-  flex-shrink: 0;
-}
-.tcard-icon svg {
-  width: 28px;
-  height: 28px;
-}
 .tcard-body {
   flex: 1;
   min-width: 0;
@@ -1859,9 +1850,6 @@ small {
   display: inline-flex;
   color: var(--muted);
 }
-.tcard.finished .tcard-icon {
-  color: var(--good);
-}
 
 @media (max-width: 640px) {
   .logo-text {
@@ -1871,33 +1859,55 @@ small {
     width: 26px;
     height: 26px;
   }
-  .fs-label {
+  .fs-long {
     display: none;
   }
   .focus-switch {
+    gap: 6px;
     padding-left: 10px;
+    font-size: 0.82rem;
   }
+  .fs-state {
+    padding: 4px 9px;
+  }
+  .topbar-right {
+    gap: 6px;
+  }
+  /* Status tabs: one short row */
   .status-tabs {
     gap: 8px;
   }
   .status-tab {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-    min-height: 0;
-    padding: 12px;
+    gap: 6px;
+    min-height: 48px;
+    padding: 0 10px;
+    font-size: 0.9rem;
+  }
+  .status-icon-lg {
+    display: none;
   }
   .status-count {
-    position: absolute;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 6px;
+    font-size: 0.8rem;
   }
-  .status-tab {
-    position: relative;
+
+  /* Pop-ups span the screen instead of squeezing */
+  .toast {
+    left: 16px;
+    right: 16px;
+    max-width: none;
+    transform: none;
   }
-  .status-tab .status-count {
-    top: 10px;
-    right: 10px;
-    min-width: 26px;
-    height: 26px;
+  .focus-card,
+  .bell-menu,
+  .profile-menu {
+    position: fixed;
+    top: 62px;
+    left: 16px;
+    right: 16px;
+    width: auto;
   }
   .tcard {
     gap: 12px;
@@ -1905,14 +1915,6 @@ small {
   }
   .tcard-name {
     font-size: 1rem;
-  }
-  .tcard-icon {
-    width: 44px;
-    height: 44px;
-  }
-  .tcard-icon svg {
-    width: 22px;
-    height: 22px;
   }
 }
 
