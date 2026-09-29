@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { BADGES, PORTAL, SIZES, dueLabel, STEP_XP, TASKS, THEMES, XP_PER_LEVEL, isUnlocked, labels, levelInfo, themesUnlockedBetween } from './data.js'
+import { BADGES, SIZES, dueLabel, STEP_XP, TASKS, THEMES, XP_PER_LEVEL, isUnlocked, labels, levelInfo, themesUnlockedBetween } from './data.js'
 import './App.css'
 
 const STORAGE_KEY = 'focuspath-prototype-v1'
@@ -265,7 +265,7 @@ export default function App() {
 
   const setFocus = (on) => {
     setSetting('focusMode', on)
-    setToast(on ? 'Focus Mode on: menus and feed hidden.' : 'Focus Mode off: full portal view.')
+    setToast(on ? 'Focus Mode on: menus hidden.' : 'Focus Mode off: menus shown.')
   }
 
   const resetSprint = (min = settings.sprintMin, running = true) =>
@@ -988,36 +988,6 @@ export default function App() {
     setToast(`${item} is part of the full learning platform.`)
   }
 
-  function Feed() {
-    return (
-      <aside className="feed" aria-label="Class feed">
-        <div className="card feed-card">
-          <h2>Class stream</h2>
-          <ul>
-            {PORTAL.feed.map((post, i) => (
-              <li key={i}>
-                <span className="feed-from">{post.from}</span>
-                <p>{post.text}</p>
-                <small>{post.when} ago</small>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="card feed-card">
-          <h2>Upcoming</h2>
-          <ul>
-            {openTasks.map((t) => (
-              <li key={t.id} className="due">
-                <p>{t.title}</p>
-                <small>{dueLabel(t.dueIn)}</small>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </aside>
-    )
-  }
-
   const screens = {
     tasks: TaskList,
     step: StepScreen,
@@ -1085,7 +1055,7 @@ export default function App() {
         </div>
       </header>
 
-      <main className={settings.focusMode ? 'main' : 'main portal'}>
+      <main className="main">
         <div className="center">
         {inTask && GoalAnchor()}
         <nav className="here" aria-label="You are here">
@@ -1103,7 +1073,6 @@ export default function App() {
           {screens[screen]()}
         </div>
         </div>
-        {!settings.focusMode && Feed()}
       </main>
 
       {toast && (

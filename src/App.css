@@ -197,66 +197,6 @@ small {
   color: var(--accent);
 }
 
-/* ---------- Focus Mode OFF: regular portal (menus and feed) ---------- */
-
-.main.portal {
-  max-width: 1000px;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 280px;
-  gap: 24px;
-  align-items: start;
-}
-.center {
-  min-width: 0;
-}
-.feed {
-  position: sticky;
-  top: 88px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-.feed-card {
-  padding: 18px;
-}
-.feed-card h2 {
-  margin-bottom: 8px;
-  font-size: 1rem;
-}
-.feed-card ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.feed-card li {
-  padding: 10px 0;
-  border-top: 1px solid var(--line);
-  font-size: 0.88rem;
-}
-.feed-card li:first-child {
-  border-top: 0;
-}
-.feed-from {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--accent);
-}
-.feed-card li.due {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-@media (max-width: 1000px) {
-  .main.portal {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 16px;
-  }
-  .feed {
-    position: static;
-  }
-}
-
 /* ---------- Goal Anchor ---------- */
 
 .goal-anchor {
