@@ -212,6 +212,7 @@ export default function App() {
   const [videoChoice, setVideoChoice] = useState({})
   const [filter, setFilter] = useState('todo')
   const [focusIntroOpen, setFocusIntroOpen] = useState(false)
+  const [logoutOpen, setLogoutOpen] = useState(false)
   const [dontShowAgain, setDontShowAgain] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [themeOpen, setThemeOpen] = useState(false)
@@ -265,12 +266,13 @@ export default function App() {
   }, [menuOpen])
 
   useEffect(() => {
-    if (!settingsOpen && !themeOpen && !focusIntroOpen) return
+    if (!settingsOpen && !themeOpen && !focusIntroOpen && !logoutOpen) return
     const onKey = (e) => {
       if (e.key !== 'Escape') return
       setSettingsOpen(false)
       setThemeOpen(false)
       setFocusIntroOpen(false)
+      setLogoutOpen(false)
     }
     document.body.style.overflow = 'hidden'
     window.addEventListener('keydown', onKey)
@@ -278,7 +280,7 @@ export default function App() {
       document.body.style.overflow = ''
       window.removeEventListener('keydown', onKey)
     }
-  }, [settingsOpen, themeOpen, focusIntroOpen])
+  }, [settingsOpen, themeOpen, focusIntroOpen, logoutOpen])
 
   useEffect(() => {
     if (!toast) return
@@ -1114,6 +1116,40 @@ export default function App() {
     )
   }
 
+  // Prototype only: Log out resets everything so the next demo starts fresh.
+  const logOut = () => {
+    setState(structuredClone(DEFAULT_STATE))
+    setTaskId(null)
+    setVideoChoice({})
+    setFilter('todo')
+    setCleared(null)
+    setSavedAt(false)
+    setSprint({ remaining: DEFAULT_STATE.settings.sprintMin * 60, running: false, over: false })
+    setLogoutOpen(false)
+    setToast('Logged out. The prototype has been reset.')
+    go('tasks')
+  }
+
+  function LogoutDialog() {
+    return (
+      <div className="overlay centered" onClick={(e) => e.target === e.currentTarget && setLogoutOpen(false)}>
+        <div className="card focus-intro" role="alertdialog" aria-modal="true" aria-labelledby="logout-title">
+          <span className="focus-intro-icon logout-icon">{Icon.logout}</span>
+          <h2 id="logout-title">Log out?</h2>
+          <p className="muted">This prototype will reset: progress, XP, badges, and settings go back to the start.</p>
+          <div className="pair">
+            <button className="btn big" onClick={() => setLogoutOpen(false)}>
+              Cancel
+            </button>
+            <button className="btn primary big" onClick={logOut}>
+              Log out
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   const openMenu = (item) => {
     setMenuOpen(false)
     setToast(`${item} is part of the full learning platform.`)
@@ -1217,7 +1253,13 @@ export default function App() {
                       {Icon.help} Help
                     </button>
                     <hr />
-                    <button role="menuitem" onClick={() => openMenu('Log out')}>
+                    <button
+                      role="menuitem"
+                      onClick={() => {
+                        setMenuOpen(false)
+                        setLogoutOpen(true)
+                      }}
+                    >
                       {Icon.logout} Log out
                     </button>
                   </>
@@ -1245,6 +1287,7 @@ export default function App() {
       {settingsOpen && SettingsPanel()}
       {themeOpen && ThemePanel()}
       {focusIntroOpen && FocusIntro()}
+      {logoutOpen && LogoutDialog()}
     </div>
   )
 }

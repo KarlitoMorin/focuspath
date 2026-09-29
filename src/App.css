@@ -2092,3 +2092,11 @@ small {
   height: 14px;
   stroke-width: 3;
 }
+
+.logout-icon {
+  background: var(--subtle);
+  color: var(--text);
+}
+.focus-intro .pair {
+  width: 100%;
+}
