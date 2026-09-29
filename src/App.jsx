@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { BADGES, SIZES, dueLabel, STEP_XP, TASKS, THEMES, XP_PER_LEVEL, isUnlocked, labels, levelInfo, themesUnlockedBetween } from './data.js'
+import { BADGES, CLASS_UPDATES, SAMPLE_AD, SIZES, dueLabel, STEP_XP, TASKS, THEMES, XP_PER_LEVEL, isUnlocked, labels, levelInfo, themesUnlockedBetween } from './data.js'
 import './App.css'
 
 const STORAGE_KEY = 'focuspath-prototype-v1'
@@ -55,6 +55,15 @@ const Icon = {
   ),
   clock: (
     <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+  ),
+  eye: (
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" /><circle cx="12" cy="12" r="3" /></svg>
+  ),
+  eyeOff: (
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18" /><path d="M10.6 5.1A10.8 10.8 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.1M6.6 6.6C3.9 8.4 2 12 2 12s3.6 7 10 7a10 10 0 0 0 5.4-1.6" /><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" /></svg>
+  ),
+  bell: (
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" /><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0" /></svg>
   ),
   x: (
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17" /></svg>
@@ -192,6 +201,8 @@ export default function App() {
   const [taskId, setTaskId] = useState(initialResume ? state.lastTaskId : null)
   const [menuOpen, setMenuOpen] = useState(false)
   const [focusCardOpen, setFocusCardOpen] = useState(false)
+  const [bellOpen, setBellOpen] = useState(false)
+  const [updatesSeen, setUpdatesSeen] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [toast, setToast] = useState(null)
   const [cleared, setCleared] = useState(null)
@@ -228,11 +239,12 @@ export default function App() {
   }, [sprint.running])
 
   useEffect(() => {
-    if (!menuOpen && !focusCardOpen) return
+    if (!menuOpen && !focusCardOpen && !bellOpen) return
     const close = (e) => {
-      if (e.type === 'keydown' ? e.key !== 'Escape' : e.target.closest('.menu-wrap, .focus-wrap')) return
+      if (e.type === 'keydown' ? e.key !== 'Escape' : e.target.closest('.menu-wrap, .focus-wrap, .bell-wrap')) return
       setMenuOpen(false)
       setFocusCardOpen(false)
+      setBellOpen(false)
     }
     document.addEventListener('pointerdown', close)
     document.addEventListener('keydown', close)
@@ -240,7 +252,24 @@ export default function App() {
       document.removeEventListener('pointerdown', close)
       document.removeEventListener('keydown', close)
     }
-  }, [menuOpen, focusCardOpen])
+  }, [menuOpen, focusCardOpen, bellOpen])
+
+  // The Focus Mode status card hides itself after a few seconds.
+  useEffect(() => {
+    if (!focusCardOpen) return
+    const id = setTimeout(() => setFocusCardOpen(false), 4000)
+    return () => clearTimeout(id)
+  }, [focusCardOpen, state.settings.focusMode])
+
+  // With Focus Mode off, class updates interrupt like a normal portal would.
+  useEffect(() => {
+    if (state.settings.focusMode) return
+    const id = setTimeout(() => {
+      const u = CLASS_UPDATES[0]
+      setToast(`🔔 ${u.from}: ${u.text}`)
+    }, 6000)
+    return () => clearTimeout(id)
+  }, [state.settings.focusMode])
 
   useEffect(() => {
     if (!settingsOpen) return
@@ -269,9 +298,12 @@ export default function App() {
       return s
     })
 
+  // Focus Mode on = ads blocked, notifications held, menus hidden, motion off. One tap, no settings.
   const setFocus = (on) => {
     setSetting('focusMode', on)
-    setToast(on ? 'Focus Mode on: menus hidden.' : 'Focus Mode off: menus shown.')
+    setBellOpen(false)
+    setFocusCardOpen(true)
+    if (on) setUpdatesSeen(false)
   }
 
   const resetSprint = (min = settings.sprintMin, running = true) =>
@@ -911,14 +943,8 @@ export default function App() {
 
           <label className="setting">
             <span>
-              <strong>Focus Mode</strong>
-            </span>
-            <input type="checkbox" className="switch" checked={settings.focusMode} onChange={(e) => setFocus(e.target.checked)} />
-          </label>
-
-          <label className="setting">
-            <span>
               <strong>Animations</strong>
+              <small>Always off in Focus Mode.</small>
             </span>
             <input type="checkbox" className="switch" checked={settings.motion} onChange={(e) => setSetting('motion', e.target.checked)} />
           </label>
@@ -995,41 +1021,32 @@ export default function App() {
   }
 
   function FocusCard() {
-    const items = [
-      { label: 'One task at a time, menus hidden', on: settings.focusMode },
-      { label: 'Goal kept on screen', on: true },
-      { label: 'Distraction Shield (no ads or autoplay)', on: true },
-      { label: 'Reduce motion', on: !settings.motion },
-    ]
+    const on = settings.focusMode
+    const items = ['Ads and autoplay blocked', 'Notifications held', 'Menus hidden', 'Motion off']
     return (
-      <div id="focus-card" className="focus-card" role="dialog" aria-label="What Focus Mode is doing">
-        <strong className="focus-card-title">Focus Mode is {settings.focusMode ? 'on' : 'off'}</strong>
+      <div id="focus-card" className="focus-card" role="status">
+        <strong className="focus-card-title">Focus Mode {on ? 'on' : 'off'}</strong>
         <ul>
-          {items.map((item) => (
-            <li key={item.label} className={item.on ? 'is-on' : 'is-off'}>
-              <span className="focus-mark">{item.on ? Icon.check : Icon.x}</span>
-              {item.label}
+          {items.map((label) => (
+            <li key={label} className={on ? 'is-on' : 'is-off'}>
+              <span className="focus-mark">{on ? Icon.check : Icon.x}</span>
+              {label}
             </li>
           ))}
         </ul>
-        <button
-          className="btn primary"
-          onClick={() => {
-            setFocusCardOpen(false)
-            setFocus(!settings.focusMode)
-          }}
-        >
-          {settings.focusMode ? 'Exit focus' : 'Turn on Focus Mode'}
-        </button>
-        <button
-          className="link-btn"
-          onClick={() => {
-            setFocusCardOpen(false)
-            setSettingsOpen(true)
-          }}
-        >
-          Change in Focus settings
-        </button>
+        {!on && <small>{CLASS_UPDATES.length} class updates were held while you focused.</small>}
+      </div>
+    )
+  }
+
+  function AdBanner() {
+    return (
+      <div className="ad" aria-label="Advertisement">
+        <span className="ad-tag">Ad</span>
+        <div>
+          <strong>{SAMPLE_AD.title}</strong>
+          <p>{SAMPLE_AD.text}</p>
+        </div>
       </div>
     )
   }
@@ -1045,7 +1062,7 @@ export default function App() {
   }
 
   return (
-    <div className={`app theme-${settings.theme} ${settings.motion ? 'motion-on' : 'motion-off'}`}>
+    <div className={`app theme-${settings.theme} ${settings.motion && !settings.focusMode ? 'motion-on' : 'motion-off'}`}>
       <header className="topbar">
         <div className="menu-wrap">
           <button className="icon-btn" onClick={() => setMenuOpen((o) => !o)} aria-label="Menu" aria-expanded={menuOpen}>
@@ -1091,14 +1108,43 @@ export default function App() {
           </nav>
         )}
         <div className="topbar-right">
+          {!settings.focusMode && (
+            <div className="bell-wrap">
+              <button
+                className="icon-btn"
+                onClick={() => {
+                  setBellOpen((o) => !o)
+                  setUpdatesSeen(true)
+                }}
+                aria-label={`Class updates (${CLASS_UPDATES.length})`}
+                aria-expanded={bellOpen}
+              >
+                {Icon.bell}
+                {!updatesSeen && <span className="count">{CLASS_UPDATES.length}</span>}
+              </button>
+              {bellOpen && (
+                <div className="menu bell-menu">
+                  <strong>Class updates</strong>
+                  <ul>
+                    {CLASS_UPDATES.map((u) => (
+                      <li key={u.text}>
+                        <span className="update-from">{u.from}</span> {u.text}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
           <div className="focus-wrap">
             <button
-              className={settings.focusMode ? 'focus-pill on' : 'focus-pill'}
-              onClick={() => setFocusCardOpen((o) => !o)}
-              aria-expanded={focusCardOpen}
-              aria-controls="focus-card"
+              className={settings.focusMode ? 'eye-btn on' : 'eye-btn'}
+              onClick={() => setFocus(!settings.focusMode)}
+              aria-pressed={settings.focusMode}
+              aria-label={`Focus Mode ${settings.focusMode ? 'on' : 'off'}`}
+              title={`Focus Mode ${settings.focusMode ? 'on' : 'off'}`}
             >
-              <span className="pill-dot" /> Focus Mode: {settings.focusMode ? 'ON' : 'OFF'}
+              {settings.focusMode ? Icon.eye : Icon.eyeOff}
             </button>
             {focusCardOpen && FocusCard()}
           </div>
@@ -1119,6 +1165,7 @@ export default function App() {
             ))}
           </span>
         </nav>
+        {!settings.focusMode && AdBanner()}
         <div key={`${screen}-${prog.step}`} className="screen">
           {screens[screen]()}
         </div>

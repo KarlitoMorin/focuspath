@@ -126,3 +126,12 @@ export function labels(theme) {
     trophy: guitar ? '🎸' : '🏆',
   }
 }
+
+// Sample distractions shown only when Focus Mode is off (Focus Mode blocks or holds them).
+export const CLASS_UPDATES = [
+  { from: 'English', text: 'Essay rubric uploaded.' },
+  { from: 'Math', text: 'Answers will be posted on Friday.' },
+  { from: 'School', text: 'Club sign-ups are open this week.' },
+]
+
+export const SAMPLE_AD = { title: 'SnapQuiz Pro', text: 'Finish homework 2x faster! Tap to learn more.' }
