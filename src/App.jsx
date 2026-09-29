@@ -205,9 +205,9 @@ function ThemePicker({ xp, current, onPick }) {
 
 export default function App() {
   const [state, setState] = useState(loadState)
-  const initialResume = state.lastTaskId && isInProgress(state.progress[state.lastTaskId])
-  const [screen, setScreen] = useState(initialResume ? 'resume' : 'tasks')
-  const [taskId, setTaskId] = useState(initialResume ? state.lastTaskId : null)
+  // Opening the app always lands on the task list (home); saved work shows "Continue".
+  const [screen, setScreen] = useState('tasks')
+  const [taskId, setTaskId] = useState(null)
   const [menuOpen, setMenuOpen] = useState(false)
   const [videoChoice, setVideoChoice] = useState({})
   const [filter, setFilter] = useState('todo')
