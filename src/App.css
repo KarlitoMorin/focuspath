@@ -2037,60 +2037,30 @@ small {
   color: var(--muted);
 }
 
-/* Linked reading: shows an ad with Focus Mode off, hides it with Focus Mode on */
-.article {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 14px 16px;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  background: var(--subtle);
-  font-size: 0.95rem;
-}
-.article-title {
-  font-weight: 600;
-}
-.article-ad {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  border-radius: 10px;
-  background: linear-gradient(90deg, #ff5f6d, #ffc371);
-  color: #3b0a0a;
-}
-.article-ad small {
-  color: #5a1a0f;
-}
 .ad-tag {
   padding: 2px 8px;
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.85);
+  color: #1f2330;
+  text-shadow: none;
   font-size: 0.72rem;
   font-weight: 700;
 }
-.motion-on .article-ad {
-  animation: ad-pulse 1.2s ease-in-out infinite;
+.motion-on .ad-popup {
+  animation:
+    ad-rise 0.35s ease,
+    ad-pulse 1.2s ease-in-out 0.35s infinite;
+}
+@keyframes ad-rise {
+  from {
+    transform: translateY(100%);
+  }
 }
 @keyframes ad-pulse {
   50% {
     transform: scale(1.02);
     filter: brightness(1.1);
   }
-}
-.ad-hidden {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--good);
-}
-.ad-hidden svg {
-  width: 14px;
-  height: 14px;
-  stroke-width: 3;
 }
 
 .logout-icon {
@@ -2114,4 +2084,59 @@ small {
 .support-note strong {
   font-weight: 600;
   color: var(--accent);
+}
+
+/* Pop-up ad at the bottom (Focus Mode off only) */
+.ad-popup {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: min(560px, calc(100% - 32px));
+  padding: 12px 12px 12px 16px;
+  border-radius: 14px;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+  transform: translateX(-50%);
+}
+.motion-on .ad-popup {
+  translate: -50% 0;
+  transform: none;
+}
+.ad-text {
+  flex: 1;
+  min-width: 0;
+}
+.ad-text strong {
+  display: block;
+}
+.ad-text small {
+  color: #fff;
+}
+.ad-close {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  color: #1f2330;
+  flex-shrink: 0;
+}
+.ad-close svg {
+  width: 16px;
+  height: 16px;
+}
+.has-ad .main {
+  padding-bottom: 120px;
+}
+@media (max-width: 640px) {
+  .has-ad .card .actions {
+    bottom: 88px;
+  }
 }

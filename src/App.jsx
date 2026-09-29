@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { BADGES, SIZES, dueLabel, STEP_XP, TASKS, THEMES, XP_PER_LEVEL, isUnlocked, labels, levelInfo, themesUnlockedBetween } from './data.js'
+import { ADS, BADGES, SIZES, dueLabel, STEP_XP, TASKS, THEMES, XP_PER_LEVEL, isUnlocked, labels, levelInfo, themesUnlockedBetween } from './data.js'
 import './App.css'
 
 const STORAGE_KEY = 'focuspath-prototype-v1'
@@ -213,6 +213,8 @@ export default function App() {
   const [filter, setFilter] = useState('todo')
   const [focusIntroOpen, setFocusIntroOpen] = useState(false)
   const [logoutOpen, setLogoutOpen] = useState(false)
+  const [adShown, setAdShown] = useState(false)
+  const [adIndex, setAdIndex] = useState(0)
   const [dontShowAgain, setDontShowAgain] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [themeOpen, setThemeOpen] = useState(false)
@@ -283,6 +285,12 @@ export default function App() {
   }, [settingsOpen, themeOpen, focusIntroOpen, logoutOpen])
 
   useEffect(() => {
+    if (state.settings.focusMode) return
+    const id = setTimeout(() => setAdShown(true), 3000)
+    return () => clearTimeout(id)
+  }, [state.settings.focusMode])
+
+  useEffect(() => {
     if (!toast) return
     const id = setTimeout(() => setToast(null), 3500)
     return () => clearTimeout(id)
@@ -302,6 +310,7 @@ export default function App() {
   // Turning it on explains what it does, until he ticks "Don't show this again".
   const setFocus = (on) => {
     setSetting('focusMode', on)
+    setAdShown(false)
     if (on && !settings.hideFocusIntro) {
       setDontShowAgain(false)
       setFocusIntroOpen(true)
@@ -681,29 +690,6 @@ export default function App() {
     )
   }
 
-  // A linked web page with an ad in it; Focus Mode hides the ad.
-  function ArticleTile(article) {
-    return (
-      <div className="article">
-        <small>{article.source}</small>
-        <strong className="article-title">{article.title}</strong>
-        <p>{article.before}</p>
-        {settings.focusMode ? (
-          <p className="ad-hidden">{Icon.check} Ad hidden</p>
-        ) : (
-          <div className="article-ad" aria-label="Advertisement">
-            <span className="ad-tag">Ad</span>
-            <span>
-              <strong>SnapQuiz Pro</strong>
-              <small>Finish homework 2x faster! Tap to learn more.</small>
-            </span>
-          </div>
-        )}
-        <p>{article.after}</p>
-      </div>
-    )
-  }
-
   function StepScreen() {
     const step = task.steps[prog.step]
     const checks = prog.checks[prog.step] || step.items.map(() => false)
@@ -735,7 +721,6 @@ export default function App() {
           <h1 className="step-title">{step.title}</h1>
 
           {step.video && VideoTile(step.video)}
-          {step.article && ArticleTile(step.article)}
 
           <ul className="checklist">
             {step.items.map((item, i) => (
@@ -1154,6 +1139,36 @@ export default function App() {
     go('tasks')
   }
 
+  // Sample pop-up ad, like a normal learning site. Focus Mode never shows it.
+  // Closing one ad brings up the next one shortly after, and the three repeat.
+  const closeAd = () => {
+    setAdShown(false)
+    setAdIndex((i) => (i + 1) % ADS.length)
+    setTimeout(() => setAdShown(true), 1500)
+  }
+
+  function AdPopup() {
+    const ad = ADS[adIndex]
+    return (
+      <div
+        key={adIndex}
+        className="ad-popup"
+        role="complementary"
+        aria-label="Advertisement"
+        style={{ background: `linear-gradient(90deg, ${ad.colors[0]}, ${ad.colors[1]})` }}
+      >
+        <span className="ad-tag">Ad</span>
+        <span className="ad-text">
+          <strong>{ad.name}</strong>
+          <small>{ad.text}</small>
+        </span>
+        <button className="ad-close" onClick={closeAd} aria-label="Close ad">
+          {Icon.x}
+        </button>
+      </div>
+    )
+  }
+
   function LogoutDialog() {
     return (
       <div className="overlay centered" onClick={(e) => e.target === e.currentTarget && setLogoutOpen(false)}>
@@ -1224,7 +1239,9 @@ export default function App() {
   }
 
   return (
-    <div className={`app theme-${settings.theme} ${settings.motion && !settings.focusMode ? 'motion-on' : 'motion-off'}`}>
+    <div
+      className={`app theme-${settings.theme} ${settings.motion && !settings.focusMode ? 'motion-on' : 'motion-off'}${adShown && !settings.focusMode ? ' has-ad' : ''}`}
+    >
       <header className="topbar">
         <button className="logo" onClick={() => (inTask ? pauseAndSave() : go('tasks'))} aria-label="FocusPath, your tasks">
           <span className="logo-mark">{Icon.target}</span>
@@ -1312,6 +1329,7 @@ export default function App() {
       {themeOpen && ThemePanel()}
       {focusIntroOpen && FocusIntro()}
       {logoutOpen && LogoutDialog()}
+      {adShown && !settings.focusMode && AdPopup()}
     </div>
   )
 }

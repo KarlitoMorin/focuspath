@@ -22,12 +22,6 @@ export const TASKS = [
     steps: [
       {
         title: 'Read the essay prompt',
-        article: {
-          source: 'Linked from your class page',
-          title: 'Essay prompt: A place that matters to you',
-          before: 'Think of a place that matters to you. It can be big or small, near or far.',
-          after: 'In 4 paragraphs, describe the place and explain why it matters. Use details that help the reader see it.',
-        },
         items: ['Read the prompt once, start to finish', 'Highlight the main question', 'Write the question in your own words'],
       },
       {
@@ -180,3 +174,11 @@ export function labels(theme) {
     working: guitar ? 'Now playing:' : "You're working on:",
   }
 }
+
+// Sample pop-up ads shown only with Focus Mode off (made-up products).
+// Two are aimed at Lucas's interests, which is what makes ads so distracting for him.
+export const ADS = [
+  { name: 'SnapQuiz Pro', text: 'Finish homework 2x faster! Tap to learn more.', colors: ['#ff5f6d', '#ffc371'] },
+  { name: 'BlockBuild Legends', text: 'New season is live! Play free now.', colors: ['#7f5af0', '#2cb1ff'] },
+  { name: 'RiffMaster Guitar', text: 'Learn any song in 5 minutes. 50% off today!', colors: ['#11998e', '#38ef7d'] },
+]
