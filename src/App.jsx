@@ -1129,7 +1129,6 @@ export default function App() {
         <div className="center">
         {inTask && GoalAnchor()}
         <nav className="here" aria-label="You are here">
-          <span className="here-label">You are here:</span>
           <span className="crumbs">
             {here.map((c, i) => (
               <span key={i} className={i === here.length - 1 ? 'crumb last' : 'crumb'} aria-current={i === here.length - 1 ? 'page' : undefined}>
