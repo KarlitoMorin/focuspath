@@ -41,6 +41,45 @@ const formatTime = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0
 /* ---------- Icons ---------- */
 
 const Icon = {
+  user: (
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></svg>
+  ),
+  trophy: (
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0z" /><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 21h8M9 17h6" /></svg>
+  ),
+  help: (
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6M12 17h.01" /></svg>
+  ),
+  logout: (
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4" /><path d="M10 16l-4-4 4-4M6 12h10" /></svg>
+  ),
+  chevron: (
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+  ),
+  clipboard: (
+    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2" /><path d="M9 4h6v3H9zM9 11h6M9 15h4" /></svg>
+  ),
+  alert: (
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v6M12 16.5h.01" /></svg>
+  ),
+  checkCircle: (
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M8 12.5l2.7 2.7L16 10" /></svg>
+  ),
+  doc: (
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6z" /><path d="M14 3v4h4M9 12h6M9 16h6" /></svg>
+  ),
+  calc: (
+    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2" /><path d="M8 7h8M8 12h2M12 12h2M16 12h.01M8 16h2M12 16h2M16 16h.01" /></svg>
+  ),
+  book: (
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h6a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H3zM21 5h-6a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h7z" /></svg>
+  ),
+  laptop: (
+    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="5" width="14" height="10" rx="1.5" /><path d="M2 19h20" /></svg>
+  ),
+  people: (
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3" /><path d="M6 20a6 6 0 0 1 12 0" /><circle cx="5" cy="10" r="2" /><circle cx="19" cy="10" r="2" /><path d="M2 18a3.5 3.5 0 0 1 4-3M22 18a3.5 3.5 0 0 0-4-3" /></svg>
+  ),
   target: (
     <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1.5" fill="currentColor" /></svg>
   ),
@@ -86,15 +125,6 @@ const Icon = {
 }
 
 /* ---------- Small pieces ---------- */
-
-function SizeTag({ size }) {
-  const s = SIZES[size]
-  return (
-    <span className={`size-tag size-${size}`}>
-      {s.label} · {s.time}
-    </span>
-  )
-}
 
 function ProgressBar({ total, done, theme }) {
   if (theme !== 'classic') {
@@ -200,6 +230,7 @@ export default function App() {
   const [screen, setScreen] = useState(initialResume ? 'resume' : 'tasks')
   const [taskId, setTaskId] = useState(initialResume ? state.lastTaskId : null)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [filter, setFilter] = useState('todo')
   const [focusCardOpen, setFocusCardOpen] = useState(false)
   const [bellOpen, setBellOpen] = useState(false)
   const [updatesSeen, setUpdatesSeen] = useState(false)
@@ -417,7 +448,7 @@ export default function App() {
     if (!has('first-riff')) unlocked.push('first-riff')
     if (prog.resumed && !has('comeback')) unlocked.push('comeback')
     if (doneCount >= 2 && !has('encore')) unlocked.push('encore')
-    if (doneCount >= 3 && !has('full-setlist')) unlocked.push('full-setlist')
+    if (doneCount >= TASKS.length && !has('full-setlist')) unlocked.push('full-setlist')
 
     update((s) => {
       const p = s.progress[task.id]
@@ -498,59 +529,115 @@ export default function App() {
     complete: ['Tasks', task?.title, 'Done'],
   }[screen]
 
+  function TaskCard(t, i) {
+    const p = state.progress[t.id]
+    const going = isInProgress(p)
+    return (
+      <li key={t.id}>
+        <button className={`tcard c-${t.color}${i === 0 ? ' suggested' : ''}`} onClick={() => openTask(t.id)}>
+          <span className="tcard-icon">{Icon[t.icon]}</span>
+          <span className="tcard-body">
+            <span className="tcard-name">
+              {t.name}
+              {i === 0 && <span className="start-here">Start here</span>}
+            </span>
+            <span className="tcard-title">{t.title}</span>
+            <span className="tcard-meta">
+              <span className="tcard-time">
+                {Icon.clock} {t.time}
+              </span>
+              <span className="due-tag">{dueLabel(t.dueIn)}</span>
+            </span>
+            {going && (
+              <span className="saved-note">
+                {Icon.save} Saved at {L.step} {Math.min(p.step + 1, t.steps.length)} of {t.steps.length}
+              </span>
+            )}
+          </span>
+          <span className={`size-pill pill-${t.size}`}>{SIZES[t.size].label}</span>
+          <span className="tcard-go">{Icon.chevron}</span>
+        </button>
+      </li>
+    )
+  }
+
   function TaskList() {
+    const missed = openTasks.filter((t) => t.dueIn < 0)
+    const todo = openTasks.filter((t) => t.dueIn >= 0)
+    const tabs = [
+      { id: 'todo', label: 'To Do', count: todo.length, icon: Icon.clipboard },
+      { id: 'missed', label: 'Missed', count: missed.length, icon: Icon.alert },
+      { id: 'done', label: 'Done', count: doneTasks.length, icon: Icon.checkCircle },
+    ]
     return (
       <section className="page">
         <div className="list-head">
-          <h1>Your tasks</h1>
+          <h1>Tasks</h1>
+          {settings.rewards && (
+            <span className="chip">
+              <span className="chip-star">{Icon.star}</span> {state.xp} XP
+            </span>
+          )}
         </div>
-        {settings.rewards && (
-          <span className="chip">
-            <span className="chip-star">{Icon.star}</span> {state.xp} XP
-          </span>
-        )}
 
-        {openTasks.length === 0 ? (
-          <div className="card empty">
-            <h2>All tasks finished</h2>
-            <p className="muted">Nothing left for now. Nice work.</p>
-            <button className="btn primary" onClick={() => go('achievements')}>
-              See your Achievements
+        <div className="status-tabs" role="tablist" aria-label="Task status">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              role="tab"
+              aria-selected={filter === tab.id}
+              className={`status-tab tab-${tab.id}${filter === tab.id ? ' on' : ''}`}
+              onClick={() => setFilter(tab.id)}
+            >
+              <span className="status-icon-lg">{tab.icon}</span>
+              <span className="status-label">{tab.label}</span>
+              <span className="status-count">{tab.count}</span>
             </button>
-          </div>
-        ) : (
-          <ul className="tasks">
-            {openTasks.map((t, i) => {
-              const p = state.progress[t.id]
-              const going = isInProgress(p)
-              return (
-                <li key={t.id} className={i === 0 ? 'card task suggested' : 'card task'}>
-                  <div className="task-main">
-                    <div className="task-top">
-                      <span className="subject">{t.subject}</span>
-                      {i === 0 && <span className="start-here">Start here</span>}
-                    </div>
-                    <h2>{t.title}</h2>
-                    <div className="task-meta">
-                      <span className="due-tag">
-                        {Icon.clock} {dueLabel(t.dueIn)}
-                      </span>
-                      <SizeTag size={t.size} />
-                    </div>
-                    {going && (
-                      <p className="saved-note">
-                        {Icon.save} Saved at {L.step} {Math.min(p.step + 1, t.steps.length)} of {t.steps.length}
-                      </p>
-                    )}
-                  </div>
-                  <button className="btn primary" onClick={() => openTask(t.id)}>
-                    {going ? 'Continue' : 'Start'}
+          ))}
+        </div>
+
+        <h2 className="section-title">{filter === 'todo' ? 'Your Tasks' : filter === 'missed' ? 'Missed' : 'Done'}</h2>
+
+        {filter === 'todo' &&
+          (todo.length === 0 ? (
+            <div className="card empty">
+              <h2>All tasks finished</h2>
+              <p className="muted">Nothing left for now. Nice work.</p>
+              <button className="btn primary" onClick={() => go('achievements')}>
+                See your Achievements
+              </button>
+            </div>
+          ) : (
+            <ul className="tasks">{todo.map((t, i) => TaskCard(t, i))}</ul>
+          ))}
+
+        {filter === 'missed' &&
+          (missed.length === 0 ? (
+            <p className="muted">No missed tasks.</p>
+          ) : (
+            <ul className="tasks">{missed.map((t) => TaskCard(t, -1))}</ul>
+          ))}
+
+        {filter === 'done' &&
+          (doneTasks.length === 0 ? (
+            <p className="muted">Finished tasks show up here.</p>
+          ) : (
+            <ul className="tasks">
+              {doneTasks.map((t) => (
+                <li key={t.id}>
+                  <button className={`tcard c-${t.color} finished`} onClick={() => go('achievements')}>
+                    <span className="tcard-icon">{Icon.checkCircle}</span>
+                    <span className="tcard-body">
+                      <span className="tcard-name">{t.name}</span>
+                      <span className="tcard-title">{t.title}</span>
+                    </span>
+                    <span className="trophy-xp">+{state.progress[t.id].xpEarned} XP</span>
+                    <span className="tcard-go">{Icon.chevron}</span>
                   </button>
                 </li>
-              )
-            })}
-          </ul>
-        )}
+              ))}
+            </ul>
+          ))}
       </section>
     )
   }
@@ -1017,6 +1104,7 @@ export default function App() {
   }
 
   const openMenu = (item) => {
+    setMenuOpen(false)
     setToast(`${item} is part of the full learning platform.`)
   }
 
@@ -1052,34 +1140,10 @@ export default function App() {
   return (
     <div className={`app theme-${settings.theme} ${settings.motion && !settings.focusMode ? 'motion-on' : 'motion-off'}`}>
       <header className="topbar">
-        <div className="menu-wrap">
-          <button className="icon-btn" onClick={() => setMenuOpen((o) => !o)} aria-label="Menu" aria-expanded={menuOpen}>
-            {Icon.menu}
-          </button>
-          {menuOpen && (
-            <div className="menu" role="menu">
-              <button
-                role="menuitem"
-                className={screen === 'tasks' || inTask ? 'on' : ''}
-                onClick={() => (inTask ? pauseAndSave() : go('tasks'))}
-              >
-                {Icon.list} Active tasks <span className="menu-count">{openTasks.length}</span>
-              </button>
-              <button role="menuitem" className={screen === 'achievements' ? 'on' : ''} onClick={() => go('achievements')}>
-                {Icon.check} Done <span className="menu-count">{doneTasks.length}</span>
-              </button>
-              <button
-                role="menuitem"
-                onClick={() => {
-                  setMenuOpen(false)
-                  setSettingsOpen(true)
-                }}
-              >
-                {Icon.gear} Settings
-              </button>
-            </div>
-          )}
-        </div>
+        <button className="logo" onClick={() => (inTask ? pauseAndSave() : go('tasks'))} aria-label="FocusPath, your tasks">
+          <span className="logo-mark">{Icon.target}</span>
+          <span className="logo-text">FocusPath</span>
+        </button>
         {!settings.focusMode && (
           <nav className="topnav" aria-label="Main">
             <button className={screen === 'tasks' ? 'on' : ''} onClick={() => go('tasks')}>
@@ -1126,15 +1190,51 @@ export default function App() {
           )}
           <div className="focus-wrap">
             <button
-              className={settings.focusMode ? 'eye-btn on' : 'eye-btn'}
+              className={settings.focusMode ? 'focus-switch on' : 'focus-switch'}
               onClick={() => setFocus(!settings.focusMode)}
-              aria-pressed={settings.focusMode}
-              aria-label={`Focus Mode ${settings.focusMode ? 'on' : 'off'}`}
-              title={`Focus Mode ${settings.focusMode ? 'on' : 'off'}`}
+              role="switch"
+              aria-checked={settings.focusMode}
             >
-              {settings.focusMode ? Icon.eye : Icon.eyeOff}
+              <span className="fs-dot" />
+              <span className="fs-label">Focus Mode</span>
+              <span className="fs-state">{settings.focusMode ? 'ON' : 'OFF'}</span>
             </button>
             {focusCardOpen && FocusCard()}
+          </div>
+          <div className="menu-wrap">
+            <button className="avatar" onClick={() => setMenuOpen((o) => !o)} aria-label="Profile menu" aria-expanded={menuOpen}>
+              {Icon.user}
+            </button>
+            {menuOpen && (
+              <div className="menu profile-menu" role="menu">
+                <div className="profile-head">
+                  <strong>Lucas</strong>
+                  <small>Student</small>
+                </div>
+                <button role="menuitem" onClick={() => openMenu('Profile')}>
+                  {Icon.user} Profile
+                </button>
+                <button role="menuitem" className={screen === 'achievements' ? 'on' : ''} onClick={() => go('achievements')}>
+                  {Icon.trophy} Achievements
+                </button>
+                <button
+                  role="menuitem"
+                  onClick={() => {
+                    setMenuOpen(false)
+                    setSettingsOpen(true)
+                  }}
+                >
+                  {Icon.gear} Settings
+                </button>
+                <button role="menuitem" onClick={() => openMenu('Help')}>
+                  {Icon.help} Help
+                </button>
+                <hr />
+                <button role="menuitem" onClick={() => openMenu('Log out')}>
+                  {Icon.logout} Log out
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </header>

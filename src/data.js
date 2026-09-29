@@ -12,9 +12,13 @@ export const SIZES = {
 export const TASKS = [
   {
     id: 'essay',
+    name: 'English Essay',
     title: 'Submit English essay',
     subject: 'English',
     size: 'big',
+    time: 'About 45+ min',
+    color: 'blue',
+    icon: 'doc',
     dueIn: 1, // days from today
     steps: [
       {
@@ -37,9 +41,13 @@ export const TASKS = [
   },
   {
     id: 'math',
-    title: 'Finish Math practice set',
+    name: 'Mathematics Activity',
+    title: 'Complete Activity 3',
     subject: 'Math',
     size: 'quick',
+    time: 'About 10 min',
+    color: 'green',
+    icon: 'calc',
     dueIn: 0,
     steps: [
       {
@@ -54,9 +62,13 @@ export const TASKS = [
   },
   {
     id: 'science',
-    title: 'Answer Science reading questions',
+    name: 'Science Assignment',
+    title: 'Read Chapter 4',
     subject: 'Science',
     size: 'medium',
+    time: 'About 25 min',
+    color: 'amber',
+    icon: 'book',
     dueIn: 3,
     steps: [
       {
@@ -75,11 +87,44 @@ export const TASKS = [
   },
 ]
 
+TASKS.push(
+  {
+    id: 'history',
+    name: 'History Project',
+    title: 'Research and write the summary',
+    subject: 'History',
+    size: 'medium',
+    time: 'About 35 min',
+    color: 'purple',
+    icon: 'laptop',
+    dueIn: 4,
+    steps: [
+      { title: 'Research your topic', items: ['Pick 2 sources', 'Note 3 key facts'] },
+      { title: 'Write the summary', items: ['Write the opening sentence', 'Explain the key facts', 'Check your spelling'] },
+    ],
+  },
+  {
+    id: 'filipino',
+    name: 'Filipino Assignment',
+    title: 'Write the reflection paper',
+    subject: 'Filipino',
+    size: 'quick',
+    time: 'About 20 min',
+    color: 'cyan',
+    icon: 'people',
+    dueIn: 2,
+    steps: [
+      { title: 'Plan your reflection', items: ['Reread the story', 'Write down 2 things you felt'] },
+      { title: 'Write your reflection', items: ['Write the first paragraph', 'Write the second paragraph'] },
+    ],
+  },
+)
+
 export const BADGES = [
   { id: 'first-riff', name: 'First Riff', how: 'Finish your first task' },
   { id: 'comeback', name: 'Comeback', how: 'Return to a task after a break and finish it' },
   { id: 'encore', name: 'Encore', how: 'Finish 2 tasks' },
-  { id: 'full-setlist', name: 'Full Setlist', how: 'Finish all 3 tasks' },
+  { id: 'full-setlist', name: 'Full Setlist', how: 'Finish all 5 tasks' },
 ]
 
 // Due-Date Guidance: calm labels, relative to today ("Due today", "Due tomorrow", or the weekday).

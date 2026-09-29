@@ -71,25 +71,6 @@ small {
 .bell-wrap {
   position: relative;
 }
-.eye-btn {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  border: 1px solid var(--line);
-  border-radius: 50%;
-  background: var(--surface);
-  color: var(--muted);
-}
-.eye-btn.on {
-  border-color: transparent;
-  background: color-mix(in srgb, var(--good) 15%, transparent);
-  color: var(--good);
-}
-.eye-btn svg {
-  width: 22px;
-  height: 22px;
-}
 .bell-wrap .icon-btn {
   color: var(--text);
 }
@@ -501,31 +482,6 @@ small {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-}
-.size-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 3px 10px;
-  border-radius: 999px;
-  background: var(--subtle);
-  font-size: 0.8rem;
-  font-weight: 500;
-}
-.size-tag::before {
-  content: '';
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-}
-.size-quick::before {
-  background: var(--good);
-}
-.size-medium::before {
-  background: var(--accent);
-}
-.size-big::before {
-  background: var(--reward);
 }
 .saved-note {
   display: flex;
@@ -1516,7 +1472,10 @@ small {
 
 .motion-on .btn,
 .motion-on .icon-btn,
-.motion-on .eye-btn,
+.motion-on .focus-switch,
+.motion-on .tcard,
+.motion-on .status-tab,
+.motion-on .avatar,
 .motion-on .sprint-box,
 .motion-on .segmented button,
 .motion-on .theme-card,
@@ -1526,7 +1485,9 @@ small {
 /* Buttons grow a little on hover and shrink when pressed. */
 .motion-on .btn:not(:disabled):hover,
 .motion-on .icon-btn:hover,
-.motion-on .eye-btn:hover,
+.motion-on .focus-switch:hover,
+.motion-on .status-tab:hover,
+.motion-on .avatar:hover,
 .motion-on .sprint-box:hover,
 .motion-on .theme-card:not(:disabled):hover {
   transform: translateY(-1px) scale(1.02);
@@ -1540,7 +1501,10 @@ small {
 }
 .motion-on .btn:not(:disabled):active,
 .motion-on .icon-btn:active,
-.motion-on .eye-btn:active,
+.motion-on .focus-switch:active,
+.motion-on .tcard:active,
+.motion-on .status-tab:active,
+.motion-on .avatar:active,
 .motion-on .sprint-box:active,
 .motion-on .segmented button:active {
   transform: scale(0.96);
@@ -1649,5 +1613,376 @@ small {
   from {
     opacity: 0;
     transform: translate(-50%, 10px);
+  }
+}
+
+/* ---------- Mockup layout: header, status tabs, task cards ---------- */
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+.logo-mark {
+  display: inline-flex;
+  color: var(--accent);
+}
+.logo-mark svg {
+  width: 30px;
+  height: 30px;
+  stroke-width: 2.4;
+}
+.logo-text {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.focus-switch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 4px 6px 4px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--subtle);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.fs-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+.fs-state {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--line);
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.focus-switch.on .fs-dot {
+  background: var(--good);
+}
+.focus-switch.on .fs-state {
+  background: var(--good);
+  color: #fff;
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.avatar svg {
+  width: 22px;
+  height: 22px;
+}
+.profile-menu {
+  right: 0;
+  left: auto;
+  width: 220px;
+}
+.profile-head {
+  padding: 8px 12px 10px;
+}
+.profile-head strong {
+  display: block;
+  font-weight: 600;
+}
+.profile-menu hr {
+  margin: 4px 8px;
+  border: 0;
+  border-top: 1px solid var(--line);
+}
+
+/* Status tabs: To Do · Missed · Done */
+.status-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.status-tab {
+  --c: var(--accent);
+  --c-soft: var(--accent-soft);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 64px;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  background: var(--c-soft);
+  color: var(--text);
+  font-weight: 600;
+  text-align: left;
+}
+.status-tab.tab-todo {
+  --c: #2563eb;
+  --c-soft: #eaf1fe;
+}
+.status-tab.tab-missed {
+  --c: #c53030;
+  --c-soft: #fdeeee;
+}
+.status-tab.tab-done {
+  --c: #15803d;
+  --c-soft: #e8f6ee;
+}
+.status-tab.on {
+  border-color: var(--c);
+}
+.status-icon-lg {
+  display: inline-flex;
+  color: var(--c);
+}
+.status-icon-lg svg {
+  width: 26px;
+  height: 26px;
+}
+.status-label {
+  flex: 1;
+}
+.status-tab.on .status-label {
+  color: var(--c);
+}
+.status-count {
+  display: grid;
+  place-items: center;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--c) 14%, transparent);
+  color: var(--c);
+  font-size: 0.9rem;
+}
+
+/* Task cards */
+.c-blue {
+  --c: #2563eb;
+  --c-soft: #eaf1fe;
+}
+.c-green {
+  --c: #15803d;
+  --c-soft: #e8f6ee;
+}
+.c-amber {
+  --c: #d97706;
+  --c-soft: #fdf3e2;
+}
+.c-purple {
+  --c: #7c3aed;
+  --c-soft: #f1ebfe;
+}
+.c-cyan {
+  --c: #0891b2;
+  --c-soft: #e3f6fa;
+}
+@media (prefers-color-scheme: dark) {
+  .status-tab.tab-todo,
+  .c-blue {
+    --c: #7ea6ff;
+    --c-soft: #1c2742;
+  }
+  .status-tab.tab-missed {
+    --c: #ff8a8a;
+    --c-soft: #3a1c1c;
+  }
+  .status-tab.tab-done,
+  .c-green {
+    --c: #5cd08a;
+    --c-soft: #16301f;
+  }
+  .c-amber {
+    --c: #f5b54a;
+    --c-soft: #33270f;
+  }
+  .c-purple {
+    --c: #b794f6;
+    --c-soft: #281f40;
+  }
+  .c-cyan {
+    --c: #5fd3ec;
+    --c-soft: #10303a;
+  }
+}
+
+.tcard {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 18px 16px 18px 20px;
+  border: 1px solid var(--line);
+  border-left: 5px solid var(--c);
+  border-radius: 16px;
+  background: var(--surface);
+  text-align: left;
+}
+.tcard:hover {
+  background: var(--subtle);
+}
+.tcard.suggested {
+  border-color: color-mix(in srgb, var(--c) 45%, var(--line));
+  border-left-color: var(--c);
+}
+.tcard-icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: var(--c-soft);
+  color: var(--c);
+  flex-shrink: 0;
+}
+.tcard-icon svg {
+  width: 28px;
+  height: 28px;
+}
+.tcard-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.tcard-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+.tcard-title {
+  color: var(--muted);
+}
+.tcard-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: 4px;
+}
+.tcard-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+.tcard-time svg {
+  width: 17px;
+  height: 17px;
+}
+.tcard .saved-note {
+  margin-top: 4px;
+}
+.size-pill {
+  align-self: flex-start;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: var(--c-soft);
+  color: var(--c);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.size-pill.pill-big {
+  background: #fdeeee;
+  color: #c53030;
+}
+@media (prefers-color-scheme: dark) {
+  .size-pill.pill-big {
+    background: #3a1c1c;
+    color: #ff8a8a;
+  }
+}
+.tcard-go {
+  display: inline-flex;
+  color: var(--muted);
+}
+.tcard.finished .tcard-icon {
+  color: var(--good);
+}
+
+@media (max-width: 640px) {
+  .logo-text {
+    font-size: 1.1rem;
+  }
+  .logo-mark svg {
+    width: 26px;
+    height: 26px;
+  }
+  .fs-label {
+    display: none;
+  }
+  .focus-switch {
+    padding-left: 10px;
+  }
+  .status-tabs {
+    gap: 8px;
+  }
+  .status-tab {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    min-height: 0;
+    padding: 12px;
+  }
+  .status-count {
+    position: absolute;
+  }
+  .status-tab {
+    position: relative;
+  }
+  .status-tab .status-count {
+    top: 10px;
+    right: 10px;
+    min-width: 26px;
+    height: 26px;
+  }
+  .tcard {
+    position: relative;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px 12px 16px 14px;
+  }
+  .tcard .size-pill {
+    position: absolute;
+    top: 14px;
+    right: 12px;
+    padding: 4px 10px;
+  }
+  .tcard-name {
+    padding-right: 64px;
+    font-size: 1rem;
+  }
+  .tcard-icon {
+    width: 44px;
+    height: 44px;
+  }
+  .tcard-icon svg {
+    width: 22px;
+    height: 22px;
+  }
+  .tcard-go {
+    display: none;
   }
 }
