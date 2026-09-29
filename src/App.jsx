@@ -111,11 +111,11 @@ const Icon = {
 
 /* ---------- Small pieces ---------- */
 
-function ProgressBar({ total, done, theme }) {
+function ProgressBar({ total, done, theme, label }) {
   if (theme !== 'classic') {
     return (
       <div className="neck-wrap">
-        <div className="neck" role="progressbar" aria-valuemin={0} aria-valuemax={total} aria-valuenow={done} aria-label="Tracks cleared">
+        <div className="neck" role="progressbar" aria-valuemin={0} aria-valuemax={total} aria-valuenow={done} aria-label={label}>
           <span className="nut" />
           {Array.from({ length: total }, (_, i) => (
             <span key={i} className={i < done ? 'fret lit' : 'fret'}>
@@ -129,7 +129,7 @@ function ProgressBar({ total, done, theme }) {
   const pct = Math.round((done / total) * 100)
   return (
     <div className="progress">
-      <div className="bar" role="progressbar" aria-valuemin={0} aria-valuemax={total} aria-valuenow={done} aria-label="Steps completed">
+      <div className="bar" role="progressbar" aria-valuemin={0} aria-valuemax={total} aria-valuenow={done} aria-label={label}>
         <span style={{ width: `${pct}%` }} />
       </div>
     </div>
@@ -439,15 +439,12 @@ export default function App() {
   const openTasks = TASKS.filter((t) => !state.progress[t.id]?.done).sort((a, b) => a.dueIn - b.dueIn)
   const inTask = task && ['step', 'resume', 'review', 'sprint'].includes(screen)
 
-  const here = {
-    tasks: ['Tasks'],
-    achievements: ['Tasks', 'Achievements'],
-    step: ['Tasks', task?.title],
-    sprint: ['Tasks', task?.title, 'Focus Sprint'],
-    resume: ['Tasks', task?.title, 'Welcome back'],
-    review: ['Tasks', task?.title, 'Final check'],
-    complete: ['Tasks', task?.title, 'Done'],
-  }[screen]
+  const xpChip = () =>
+    settings.rewards && (
+      <span className="chip">
+        <span className="chip-star">{Icon.star}</span> {state.xp} XP
+      </span>
+    )
 
   function TaskCard(t, i) {
     const p = state.progress[t.id]
@@ -493,7 +490,10 @@ export default function App() {
       const next = inProgress.find((t) => t.id === state.lastTaskId) || inProgress[0] || openTasks[0]
       return (
         <section className="page">
-          <h2 className="section-title">{next && isInProgress(state.progress[next.id]) ? 'Continue your task' : 'Up next'}</h2>
+          <div className="list-head">
+            <h1 className="list-title">{next && isInProgress(state.progress[next.id]) ? 'Continue your task' : 'Up next'}</h1>
+            {xpChip()}
+          </div>
           {next ? (
             <ul className="tasks">{TaskCard(next, isInProgress(state.progress[next.id]) ? -1 : 0)}</ul>
           ) : (
@@ -509,6 +509,10 @@ export default function App() {
 
     return (
       <section className="page">
+        <div className="list-head">
+          <h1 className="list-title">Your Tasks</h1>
+          {xpChip()}
+        </div>
         <div className="status-tabs" role="tablist" aria-label="Task status">
           {tabs.map((tab) => (
             <button
@@ -525,7 +529,7 @@ export default function App() {
           ))}
         </div>
 
-        <h2 className="section-title">{filter === 'todo' ? 'Your Tasks' : filter === 'missed' ? 'Missed' : 'Done'}</h2>
+        {filter !== 'todo' && <h2 className="section-title">{filter === 'missed' ? 'Missed' : 'Done'}</h2>}
 
         {filter === 'todo' &&
           (todo.length === 0 ? (
@@ -570,21 +574,27 @@ export default function App() {
   }
 
   function GoalAnchor() {
+    const doneSteps = prog.reviewing ? task.steps.length : prog.step
     return (
       <div className="goal-anchor" role="region" aria-label="Goal Anchor">
         <span className="goal-icon">{settings.theme === 'classic' ? Icon.target : Icon.pick}</span>
         <div className="goal-text">
           <span className="goal-kicker">{L.working}</span>
           <strong>{task.title}</strong>
-          <span className="goal-step">
-            {prog.reviewing ? 'Final check' : `${L.step} ${prog.step + 1} of ${task.steps.length}`}
-          </span>
         </div>
         {savedAt && (
           <span className="saved" title="Progress saved" aria-label="Progress saved">
             {Icon.check}
           </span>
         )}
+        <div className="anchor-progress">
+          <ProgressBar
+            total={task.steps.length}
+            done={doneSteps}
+            theme={settings.theme}
+            label={`${doneSteps} of ${task.steps.length} ${L.step.toLowerCase()}s done`}
+          />
+        </div>
       </div>
     )
   }
@@ -631,8 +641,6 @@ export default function App() {
             ))}
           </ul>
 
-          <ProgressBar total={task.steps.length} done={prog.step} theme={settings.theme} />
-
           <button className="sprint-box" onClick={() => go('sprint')} aria-label="Open Focus Sprint timer">
             <span className="sprint-icon">{Icon.clock}</span>
             <span className="sprint-name">{sprint.over ? 'Break time' : 'Focus Sprint'}</span>
@@ -672,6 +680,7 @@ export default function App() {
     const frac = sprint.remaining / total
     return (
       <section className="page sprint-page">
+        <h1 className="list-title">Focus Sprint</h1>
         <div className="ring" role="timer" aria-live="off" aria-label={`${formatTime(sprint.remaining)} left`}>
           <svg viewBox="0 0 200 200">
             <circle cx="100" cy="100" r={r} className="ring-bg" />
@@ -757,12 +766,12 @@ export default function App() {
             )}
           </ol>
           <div className="actions">
-            <button className="btn primary big" onClick={continueTask}>
-              Continue →
-            </button>
-            <div className="secondary">
-              <button className="btn" onClick={() => go('tasks')}>
-                Back to tasks
+            <div className="pair">
+              <button className="btn big" onClick={() => go('tasks')}>
+                ← Back to tasks
+              </button>
+              <button className="btn primary big" onClick={continueTask}>
+                Continue →
               </button>
             </div>
           </div>
@@ -1116,20 +1125,6 @@ export default function App() {
       <main className="main">
         <div className="center">
         {inTask && GoalAnchor()}
-        <nav className="here" aria-label="You are here">
-          <span className="crumbs">
-            {here.map((c, i) => (
-              <span key={i} className={i === here.length - 1 ? 'crumb last' : 'crumb'} aria-current={i === here.length - 1 ? 'page' : undefined}>
-                {c}
-              </span>
-            ))}
-          </span>
-          {screen === 'tasks' && settings.rewards && (
-            <span className="chip">
-              <span className="chip-star">{Icon.star}</span> {state.xp} XP
-            </span>
-          )}
-        </nav>
         <div key={`${screen}-${prog.step}`} className="screen">
           {screens[screen]()}
         </div>

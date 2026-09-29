@@ -233,7 +233,7 @@ small {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   box-shadow: 0 4px 16px rgba(17, 24, 39, 0.05);
-  margin-bottom: 10px;
+  margin-bottom: 16px;
 }
 .goal-icon {
   display: grid;
@@ -282,31 +282,6 @@ small {
   width: 14px;
   height: 14px;
   stroke-width: 3;
-}
-
-/* ---------- You are here (WCAG 2.4.8) ---------- */
-
-.here {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin: 0 4px 16px;
-  font-size: 0.82rem;
-  color: var(--muted);
-  white-space: nowrap;
-}
-.crumbs {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.crumb + .crumb::before {
-  content: '›';
-  margin: 0 6px;
-}
-.crumb.last {
-  color: var(--text);
-  font-weight: 600;
 }
 
 /* ---------- Task list ---------- */
@@ -1345,9 +1320,7 @@ small {
   .themes {
     grid-template-columns: repeat(2, 1fr);
   }
-  .here {
-    margin-bottom: 12px;
-  }
+
 
   /* Focus settings: bottom sheet that fits the phone screen */
   .overlay {
@@ -1862,9 +1835,6 @@ small {
   }
 }
 
-.here .chip {
-  margin: 0 0 0 auto;
-}
 
 .sr-only {
   position: absolute;
@@ -1875,31 +1845,54 @@ small {
   white-space: nowrap;
 }
 
-/* Goal Anchor in guitar themes: pick icon on a small fretboard */
+/* Goal Anchor in guitar themes: pick icon, tinted card */
 .app:not(.theme-classic) .goal-anchor {
   border-color: color-mix(in srgb, var(--accent) 30%, var(--line));
   background: linear-gradient(90deg, var(--accent-soft), var(--surface) 70%);
-}
-.app:not(.theme-classic) .goal-icon {
-  position: relative;
-  overflow: hidden;
-  border-radius: 10px;
-  background:
-    repeating-linear-gradient(90deg, transparent 0 9px, #b9b3a6 9px 11px),
-    repeating-linear-gradient(to bottom, transparent 0 5px, var(--string) 5px 6px),
-    var(--neck);
-  color: var(--accent);
-}
-.app:not(.theme-classic) .goal-icon svg {
-  width: 22px;
-  height: 22px;
-  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
 }
 .app:not(.theme-classic) .goal-kicker {
   font-weight: 600;
   color: var(--accent);
 }
-.app.theme-acoustic .goal-icon,
-.app.theme-electric .goal-icon {
-  color: color-mix(in srgb, var(--accent) 40%, #fff);
+
+/* Progress lives in the Goal Anchor: a thin bar (Classic) or a fretboard (guitar themes) */
+.goal-anchor {
+  flex-wrap: wrap;
+}
+.anchor-progress {
+  flex-basis: 100%;
+}
+.anchor-progress .bar {
+  height: 6px;
+}
+.anchor-progress .neck {
+  height: 16px;
+  border-radius: 4px;
+}
+.anchor-progress .fret-dot {
+  width: 7px;
+  height: 7px;
+  box-shadow: 0 0 0 1.5px var(--accent);
+}
+
+
+/* Two main buttons side by side (Welcome back: Back to tasks · Continue) */
+.pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.pair .btn {
+  padding: 0 10px;
+  white-space: nowrap;
+  font-size: 1rem;
+}
+
+.list-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+.list-head .chip {
+  margin: 0;
+  align-self: center;
 }
