@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { BADGES, PORTAL, SIZES, STEP_XP, TASKS, THEMES, XP_PER_LEVEL, isUnlocked, labels, levelInfo, themesUnlockedBetween } from './data.js'
+import { BADGES, PORTAL, SIZES, dueLabel, STEP_XP, TASKS, THEMES, XP_PER_LEVEL, isUnlocked, labels, levelInfo, themesUnlockedBetween } from './data.js'
 import './App.css'
 
 const STORAGE_KEY = 'focuspath-prototype-v1'
@@ -428,7 +428,7 @@ export default function App() {
   /* ----- Screens ----- */
 
   const doneTasks = TASKS.filter((t) => state.progress[t.id]?.done)
-  const openTasks = TASKS.filter((t) => !state.progress[t.id]?.done)
+  const openTasks = TASKS.filter((t) => !state.progress[t.id]?.done).sort((a, b) => a.dueIn - b.dueIn)
   const inTask = task && ['step', 'resume', 'review', 'sprint'].includes(screen)
 
   const here = {
@@ -463,15 +463,21 @@ export default function App() {
           </div>
         ) : (
           <ul className="tasks">
-            {openTasks.map((t) => {
+            {openTasks.map((t, i) => {
               const p = state.progress[t.id]
               const going = isInProgress(p)
               return (
-                <li key={t.id} className="card task">
+                <li key={t.id} className={i === 0 ? 'card task suggested' : 'card task'}>
                   <div className="task-main">
-                    <span className="subject">{t.subject}</span>
+                    <div className="task-top">
+                      <span className="subject">{t.subject}</span>
+                      {i === 0 && <span className="start-here">Start here</span>}
+                    </div>
                     <h2>{t.title}</h2>
                     <div className="task-meta">
+                      <span className="due-tag">
+                        {Icon.clock} {dueLabel(t.dueIn)}
+                      </span>
                       <SizeTag size={t.size} />
                     </div>
                     {going && (
@@ -996,10 +1002,10 @@ export default function App() {
         <div className="card feed-card">
           <h2>Upcoming</h2>
           <ul>
-            {PORTAL.upcoming.map((u) => (
-              <li key={u.title} className="due">
-                <p>{u.title}</p>
-                <small>Due {u.due}</small>
+            {openTasks.map((t) => (
+              <li key={t.id} className="due">
+                <p>{t.title}</p>
+                <small>{dueLabel(t.dueIn)}</small>
               </li>
             ))}
           </ul>

@@ -456,6 +456,46 @@ small {
   font-size: 1.1rem;
   font-weight: 600;
 }
+.task-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.start-here {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+.task.suggested {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+}
+
+/* Due tags: always a calm soft blue, never red or flashing */
+.due-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #e8f0fe;
+  color: #1e4fb8;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+.due-tag svg {
+  width: 13px;
+  height: 13px;
+}
+@media (prefers-color-scheme: dark) {
+  .due-tag {
+    background: #1c2a4a;
+    color: #9dbbff;
+  }
+}
+
 .task-meta {
   display: flex;
   flex-wrap: wrap;

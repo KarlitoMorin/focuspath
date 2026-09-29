@@ -19,6 +19,7 @@ This is a clickable prototype designed for our persona, Lucas: a 15-year-old hig
 | "Where was I?" Resume | Auto-save, then a Welcome back screen marking each step Done, Current, or Locked | Recovering his goal |
 | Game-Style Rewards | +20 XP per step, size bonus, focus levels, badges | Sustaining focus |
 | Task Size Tags | Quick / Medium / Big, with bonuses of +30 / +50 / +80 XP | Easier to start |
+| Due-Date Guidance | Tasks sorted by due date; "Start here" on the soonest; calm "Due today" / "Due tomorrow" tags; no push notifications | Visual overload, ads and motion |
 | Achievements | Finished tasks, XP, and a badge shelf | Motivation |
 | Guitar themes | Acoustic (100 XP), Electric (200 XP), Headliner (300 XP) | Sustaining focus |
 

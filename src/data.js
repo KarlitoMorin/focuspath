@@ -15,6 +15,7 @@ export const TASKS = [
     title: 'Submit English essay',
     subject: 'English',
     size: 'big',
+    dueIn: 1, // days from today
     steps: [
       {
         title: 'Read the essay prompt',
@@ -39,6 +40,7 @@ export const TASKS = [
     title: 'Finish Math practice set',
     subject: 'Math',
     size: 'quick',
+    dueIn: 0,
     steps: [
       {
         title: 'Solve problems 1–5',
@@ -55,6 +57,7 @@ export const TASKS = [
     title: 'Answer Science reading questions',
     subject: 'Science',
     size: 'medium',
+    dueIn: 3,
     steps: [
       {
         title: 'Read the chapter section',
@@ -78,6 +81,15 @@ export const BADGES = [
   { id: 'encore', name: 'Encore', how: 'Finish 2 tasks' },
   { id: 'full-setlist', name: 'Full Setlist', how: 'Finish all 3 tasks' },
 ]
+
+// Due-Date Guidance: calm labels, relative to today ("Due today", "Due tomorrow", or the weekday).
+export function dueLabel(dueIn) {
+  if (dueIn <= 0) return 'Due today'
+  if (dueIn === 1) return 'Due tomorrow'
+  const day = new Date()
+  day.setDate(day.getDate() + dueIn)
+  return `Due ${day.toLocaleDateString('en-US', { weekday: 'long' })}`
+}
 
 export const XP_PER_LEVEL = 100
 export const SKILL_LEVELS = ['Beginner', 'Rhythm', 'Lead', 'Headliner']
@@ -124,10 +136,5 @@ export const PORTAL = {
     { from: 'School', text: 'Club sign-ups are open this week.', when: '1d' },
     { from: 'Science', text: 'New reading added to Chapter 4.', when: '1d' },
     { from: 'School', text: 'Photo day is next Tuesday.', when: '2d' },
-  ],
-  upcoming: [
-    { title: 'Math practice set', due: 'Thu' },
-    { title: 'English essay', due: 'Fri' },
-    { title: 'Science reading questions', due: 'Mon' },
   ],
 }
