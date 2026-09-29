@@ -44,6 +44,9 @@ const Icon = {
   user: (
     <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></svg>
   ),
+  pick: (
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21c-2.5-2.2-7-7.4-7-12 0-3.3 3.1-5 7-5s7 1.7 7 5c0 4.6-4.5 9.8-7 12z" fill="currentColor" stroke="none" /></svg>
+  ),
   palette: (
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 0 0 0 18c1.1 0 1.6-.8 1.6-1.6 0-.9-.7-1.4-.7-2.2 0-.9.7-1.6 1.6-1.6H17a4 4 0 0 0 4-4c0-4.7-4-8.6-9-8.6z" /><circle cx="7.5" cy="11" r="1" /><circle cx="10" cy="7" r="1" /><circle cx="15" cy="7.5" r="1" /></svg>
   ),
@@ -112,12 +115,6 @@ function ProgressBar({ total, done, theme }) {
   if (theme !== 'classic') {
     return (
       <div className="neck-wrap">
-        <div className="neck-label">
-          <span>Guitar neck</span>
-          <span>
-            {done}/{total} frets
-          </span>
-        </div>
         <div className="neck" role="progressbar" aria-valuemin={0} aria-valuemax={total} aria-valuenow={done} aria-label="Tracks cleared">
           <span className="nut" />
           {Array.from({ length: total }, (_, i) => (
@@ -132,12 +129,6 @@ function ProgressBar({ total, done, theme }) {
   const pct = Math.round((done / total) * 100)
   return (
     <div className="progress">
-      <div className="progress-label">
-        <span>Progress</span>
-        <span>
-          {done}/{total}
-        </span>
-      </div>
       <div className="bar" role="progressbar" aria-valuemin={0} aria-valuemax={total} aria-valuenow={done} aria-label="Steps completed">
         <span style={{ width: `${pct}%` }} />
       </div>
@@ -451,7 +442,7 @@ export default function App() {
   const here = {
     tasks: ['Tasks'],
     achievements: ['Tasks', 'Achievements'],
-    step: ['Tasks', task?.title, `${L.step} ${prog.step + 1}`],
+    step: ['Tasks', task?.title],
     sprint: ['Tasks', task?.title, 'Focus Sprint'],
     resume: ['Tasks', task?.title, 'Welcome back'],
     review: ['Tasks', task?.title, 'Final check'],
@@ -581,9 +572,9 @@ export default function App() {
   function GoalAnchor() {
     return (
       <div className="goal-anchor" role="region" aria-label="Goal Anchor">
-        <span className="goal-icon">{Icon.target}</span>
+        <span className="goal-icon">{settings.theme === 'classic' ? Icon.target : Icon.pick}</span>
         <div className="goal-text">
-          <span className="goal-kicker">You're working on:</span>
+          <span className="goal-kicker">{L.working}</span>
           <strong>{task.title}</strong>
           <span className="goal-step">
             {prog.reviewing ? 'Final check' : `${L.step} ${prog.step + 1} of ${task.steps.length}`}
@@ -619,16 +610,13 @@ export default function App() {
         )}
 
         <article className="card step-card">
-          <div className="step-top">
-            <span className="step-label">
-              {L.step} {prog.step + 1}
-            </span>
-            {settings.rewards && (
+          {settings.rewards && (
+            <div className="step-top">
               <span className="xp">
                 <span className="chip-star">{Icon.star}</span> {state.xp} XP
               </span>
-            )}
-          </div>
+            </div>
+          )}
           <h1 className="step-title">{step.title}</h1>
 
           <ul className="checklist">

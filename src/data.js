@@ -164,5 +164,6 @@ export function labels(theme) {
       guitar ? `Skill level: ${SKILL_LEVELS[Math.min(lvl, SKILL_LEVELS.length) - 1]}` : `Focus level ${lvl}`,
     finished: guitar ? 'Finished sets' : 'Finished tasks',
     trophy: guitar ? '🎸' : '🏆',
+    working: guitar ? 'Now playing:' : "You're working on:",
   }
 }

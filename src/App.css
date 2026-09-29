@@ -538,13 +538,8 @@ small {
 }
 .step-top {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.step-label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--accent);
+  justify-content: flex-end;
+  margin-bottom: -12px;
 }
 .xp {
   display: inline-flex;
@@ -555,7 +550,6 @@ small {
   color: var(--reward);
 }
 .step-title {
-  margin-top: -12px;
   font-size: 1.6rem;
   font-weight: 700;
 }
@@ -627,15 +621,6 @@ small {
   color: #fff;
 }
 
-.progress-label,
-.neck-label {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--muted);
-}
 .bar {
   height: 8px;
   border-radius: 4px;
@@ -1888,4 +1873,33 @@ small {
   overflow: hidden;
   clip: rect(0 0 0 0);
   white-space: nowrap;
+}
+
+/* Goal Anchor in guitar themes: pick icon on a small fretboard */
+.app:not(.theme-classic) .goal-anchor {
+  border-color: color-mix(in srgb, var(--accent) 30%, var(--line));
+  background: linear-gradient(90deg, var(--accent-soft), var(--surface) 70%);
+}
+.app:not(.theme-classic) .goal-icon {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 9px, #b9b3a6 9px 11px),
+    repeating-linear-gradient(to bottom, transparent 0 5px, var(--string) 5px 6px),
+    var(--neck);
+  color: var(--accent);
+}
+.app:not(.theme-classic) .goal-icon svg {
+  width: 22px;
+  height: 22px;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
+}
+.app:not(.theme-classic) .goal-kicker {
+  font-weight: 600;
+  color: var(--accent);
+}
+.app.theme-acoustic .goal-icon,
+.app.theme-electric .goal-icon {
+  color: color-mix(in srgb, var(--accent) 40%, #fff);
 }
