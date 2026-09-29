@@ -41,23 +41,6 @@ small {
 }
 
 
-.topnav {
-  display: flex;
-  gap: 2px;
-}
-.topnav button {
-  min-height: 44px;
-  padding: 0 14px;
-  border: 0;
-  border-radius: 10px;
-  background: none;
-  font-weight: 500;
-  color: var(--muted);
-}
-.topnav button.on {
-  color: var(--text);
-  background: var(--subtle);
-}
 
 .topbar-right {
   margin-left: auto;
@@ -349,14 +332,6 @@ small {
   font-size: 0.82rem;
   color: var(--muted);
   white-space: nowrap;
-}
-.here-icon {
-  display: inline-flex;
-  color: var(--accent);
-}
-.here-icon svg {
-  width: 15px;
-  height: 15px;
 }
 .crumbs {
   min-width: 0;
@@ -991,19 +966,6 @@ small {
 
 /* ---------- Achievements ---------- */
 
-.xp-big {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 16px;
-  font-size: 1.9rem;
-  font-weight: 700;
-  color: var(--reward);
-}
-.xp-big .chip-star svg {
-  width: 26px;
-  height: 26px;
-}
 .section-title {
   margin-top: 12px;
   font-size: 1.05rem;
@@ -1379,10 +1341,7 @@ small {
     padding: 0 12px 0 16px;
     gap: 6px;
   }
-    .topnav {
-    display: none;
-  }
-  .main {
+    .main {
     padding: 14px 16px 32px;
   }
 
@@ -1479,7 +1438,6 @@ small {
 .motion-on .sprint-box,
 .motion-on .segmented button,
 .motion-on .theme-card,
-.motion-on .topnav button,
 .motion-on .menu button,
 .motion-on 
 /* Buttons grow a little on hover and shrink when pressed. */
@@ -1985,4 +1943,8 @@ small {
   .tcard-go {
     display: none;
   }
+}
+
+.here .chip {
+  margin: 0 0 0 auto;
 }

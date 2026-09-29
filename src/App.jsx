@@ -116,9 +116,6 @@ const Icon = {
   star: (
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.8 6.4.9-4.6 4.5 1.1 6.3L12 17.3l-5.7 3 1.1-6.3-4.6-4.5 6.4-.9z" fill="currentColor" stroke="none" /></svg>
   ),
-  pin: (
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z" /><circle cx="12" cy="9.5" r="2.5" /></svg>
-  ),
   save: (
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
   ),
@@ -329,7 +326,7 @@ export default function App() {
       return s
     })
 
-  // Focus Mode on = autoplay blocked, notifications held, menus hidden, motion off. One tap, no settings.
+  // Focus Mode on = autoplay blocked, notifications held, motion off. One tap, no settings.
   const setFocus = (on) => {
     setSetting('focusMode', on)
     setBellOpen(false)
@@ -569,17 +566,28 @@ export default function App() {
       { id: 'missed', label: 'Missed', count: missed.length, icon: Icon.alert },
       { id: 'done', label: 'Done', count: doneTasks.length, icon: Icon.checkCircle },
     ]
+
+    if (settings.focusMode) {
+      const inProgress = openTasks.filter((t) => isInProgress(state.progress[t.id]))
+      const next = inProgress.find((t) => t.id === state.lastTaskId) || inProgress[0] || openTasks[0]
+      return (
+        <section className="page">
+          <h2 className="section-title">{next && isInProgress(state.progress[next.id]) ? 'Continue your task' : 'Up next'}</h2>
+          {next ? (
+            <ul className="tasks">{TaskCard(next, isInProgress(state.progress[next.id]) ? -1 : 0)}</ul>
+          ) : (
+            <div className="card empty">
+              <h2>All tasks finished</h2>
+              <p className="muted">Nothing left for now. Nice work.</p>
+            </div>
+          )}
+          <p className="muted small focus-note">Other tasks are hidden while Focus Mode is on.</p>
+        </section>
+      )
+    }
+
     return (
       <section className="page">
-        <div className="list-head">
-          <h1>Tasks</h1>
-          {settings.rewards && (
-            <span className="chip">
-              <span className="chip-star">{Icon.star}</span> {state.xp} XP
-            </span>
-          )}
-        </div>
-
         <div className="status-tabs" role="tablist" aria-label="Task status">
           {tabs.map((tab) => (
             <button
@@ -968,13 +976,6 @@ export default function App() {
             ← Tasks
           </button>
         </div>
-        <div className="card">
-          <div className="xp-big">
-            <span className="chip-star">{Icon.star}</span> {state.xp} XP
-          </div>
-          <LevelBar xp={state.xp} theme={settings.theme} />
-        </div>
-
         <h2 className="section-title">
           {L.finished} {L.trophy}
         </h2>
@@ -1002,9 +1003,6 @@ export default function App() {
             })}
           </ul>
         )}
-
-        <h2 className="section-title">Guitar themes</h2>
-        <ThemePicker xp={state.xp} current={settings.theme} onPick={(id) => setSetting('theme', id)} />
 
         <h2 className="section-title">Badge shelf</h2>
         <div className="badge-grid">
@@ -1110,7 +1108,7 @@ export default function App() {
 
   function FocusCard() {
     const on = settings.focusMode
-    const items = ['Autoplay blocked', 'Notifications held', 'Menus hidden', 'Motion off']
+    const items = ['Autoplay blocked', 'Notifications held', 'Motion off']
     return (
       <div id="focus-card" className="focus-card" role="status">
         <strong className="focus-card-title">Focus Mode {on ? 'on' : 'off'}</strong>
@@ -1144,21 +1142,6 @@ export default function App() {
           <span className="logo-mark">{Icon.target}</span>
           <span className="logo-text">FocusPath</span>
         </button>
-        {!settings.focusMode && (
-          <nav className="topnav" aria-label="Main">
-            <button className={screen === 'tasks' ? 'on' : ''} onClick={() => go('tasks')}>
-              Tasks
-            </button>
-            <button className={screen === 'achievements' ? 'on' : ''} onClick={() => go('achievements')}>
-              Achievements
-            </button>
-            {['Classes', 'Calendar', 'Grades'].map((item) => (
-              <button key={item} onClick={() => openMenu(item)}>
-                {item}
-              </button>
-            ))}
-          </nav>
-        )}
         <div className="topbar-right">
           {!settings.focusMode && (
             <div className="bell-wrap">
@@ -1201,6 +1184,7 @@ export default function App() {
             </button>
             {focusCardOpen && FocusCard()}
           </div>
+          {!settings.focusMode && (
           <div className="menu-wrap">
             <button className="avatar" onClick={() => setMenuOpen((o) => !o)} aria-label="Profile menu" aria-expanded={menuOpen}>
               {Icon.user}
@@ -1236,6 +1220,7 @@ export default function App() {
               </div>
             )}
           </div>
+          )}
         </div>
       </header>
 
@@ -1243,7 +1228,6 @@ export default function App() {
         <div className="center">
         {inTask && GoalAnchor()}
         <nav className="here" aria-label="You are here">
-          <span className="here-icon">{Icon.pin}</span>
           <span className="here-label">You are here:</span>
           <span className="crumbs">
             {here.map((c, i) => (
@@ -1252,6 +1236,11 @@ export default function App() {
               </span>
             ))}
           </span>
+          {screen === 'tasks' && settings.rewards && (
+            <span className="chip">
+              <span className="chip-star">{Icon.star}</span> {state.xp} XP
+            </span>
+          )}
         </nav>
         <div key={`${screen}-${prog.step}`} className="screen">
           {screens[screen]()}
